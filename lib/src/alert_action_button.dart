@@ -24,7 +24,7 @@ class AlertActionButton extends StatelessWidget {
   final bool isDestructive;
   final double? radius;
 
-  BorderRadius get _borderRadius => BorderRadius.circular(radius ?? 12);
+  BorderRadius get _borderRadius => BorderRadius.circular(radius ?? 16);
 
   Widget _buildButtonDecoration(
     BuildContext context, {

@@ -242,7 +242,7 @@ class _AlertContainer extends StatelessWidget {
     this.radius,
   });
 
-  BorderRadius get _borderRadius => BorderRadius.circular(radius ?? 12);
+  BorderRadius get _borderRadius => BorderRadius.circular(radius ?? 16);
 
   @override
   Widget build(BuildContext context) {
