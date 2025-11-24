@@ -156,6 +156,7 @@ Future<T?> _showDialog<T>(
                         fontWeight: FontWeight.bold, 
                         fontSize: 17,
                         maxLines: 2,
+                        textAlign: TextAlign.left,
                         overflow: TextOverflow.ellipsis,
                       ),
                     if (description != null)
@@ -164,6 +165,7 @@ Future<T?> _showDialog<T>(
                         color: Theme.of(context).colorScheme.onSurface, 
                         fontSize: 15, 
                         maxLines: 4,
+                        textAlign: TextAlign.left,
                         overflow: TextOverflow.ellipsis,
                       ),
                   ],
@@ -240,7 +242,7 @@ class _AlertContainer extends StatelessWidget {
     this.radius,
   });
 
-  BorderRadius get _borderRadius => BorderRadius.circular(radius ?? 8);
+  BorderRadius get _borderRadius => BorderRadius.circular(radius ?? 12);
 
   @override
   Widget build(BuildContext context) {
