@@ -196,7 +196,7 @@ Future<T?> _showDialog<T>(
                     Expanded(
                       child: AlertActionButton(
                         text: positiveTitle,
-                        isPositive: isDestructive,
+                        isPositive: !isDestructive,
                         isDestructive: isDestructive,
                         radius: actionButtonRadius,
                         onPressed: () {
