@@ -35,7 +35,7 @@ class AlertActionButton extends StatelessWidget {
   }) {
     final backgroungColor = isDestructive 
     ? destructiveRed 
-    : Theme.of(context).primaryColor.withValues(alpha: isPositive ? .2 : 1);
+    : Theme.of(context).primaryColor.withValues(alpha: isPositive ? .4 : 1);
 
     return PressEffect(
       onPressed: onPressed,
