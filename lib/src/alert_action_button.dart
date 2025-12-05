@@ -15,14 +15,17 @@ class AlertActionButton extends StatelessWidget {
     this.fontWeight,
     this.radius,
     this.isDestructive = false,
+    this.isPositive = false,
+    this.color,
   });
 
   final VoidCallback? onPressed;
   final FontWeight? fontWeight;
   final String text;
   final double? fontSize;
-  final bool isDestructive;
+  final bool isDestructive, isPositive;
   final double? radius;
+  final Color? color;
 
   BorderRadius get _borderRadius => BorderRadius.circular(radius ?? 16);
 
@@ -32,7 +35,7 @@ class AlertActionButton extends StatelessWidget {
   }) {
     final backgroungColor = isDestructive 
     ? destructiveRed 
-    : Theme.of(context).primaryColor;
+    : Theme.of(context).primaryColor.withValues(alpha: isPositive ? .2 : 1);
 
     return PressEffect(
       onPressed: onPressed,
@@ -44,7 +47,7 @@ class AlertActionButton extends StatelessWidget {
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [
-              backgroungColor.withValues(alpha: .8),
+              backgroungColor.withValues(alpha: .7),
               backgroungColor,
             ],
           ),

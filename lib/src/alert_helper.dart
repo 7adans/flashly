@@ -176,7 +176,7 @@ Future<T?> _showDialog<T>(
                 mainAxisSize: MainAxisSize.min,
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  if (asLoader) Expanded(
+                  if (asLoader) Flexible(
                       child: AnimatedScale(
                         scale: showButton ? 1.0 : .5,
                         duration: const Duration(milliseconds: 500),
@@ -196,6 +196,7 @@ Future<T?> _showDialog<T>(
                     Expanded(
                       child: AlertActionButton(
                         text: positiveTitle,
+                        isPositive: isDestructive,
                         isDestructive: isDestructive,
                         radius: actionButtonRadius,
                         onPressed: () {
