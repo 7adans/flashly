@@ -43,7 +43,8 @@ class AlertActionButton extends StatelessWidget {
         height: 44,
         decoration: BoxDecoration(
           borderRadius: _borderRadius,
-          gradient: LinearGradient(
+          color: isPositive ? backgroungColor : null,
+          gradient: isPositive ? null : LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [
