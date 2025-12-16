@@ -176,7 +176,7 @@ Future<T?> _showDialog<T>(
                 mainAxisSize: MainAxisSize.min,
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  if (asLoader) Flexible(
+                  if (asLoader) Expanded(
                       child: AnimatedScale(
                         scale: showButton ? 1.0 : .5,
                         duration: const Duration(milliseconds: 500),
