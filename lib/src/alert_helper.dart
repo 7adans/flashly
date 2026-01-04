@@ -9,6 +9,7 @@ import 'package:flashly/src/txt.dart';
 import 'package:flashly/src/utils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widget_previews.dart';
 import 'package:lottie/lottie.dart';
 
 enum AlertState { error, info, success }
@@ -91,9 +92,9 @@ Future<T?> _showDialog<T>(
   Widget buildIcon(String icon) {
     return Lottie.asset(
       icon,
-      width: 50,
-      height: 50,
-      fit: BoxFit.contain,
+      width: 70,
+      height: 70,
+      fit: BoxFit.cover,
       repeat: true,
     );
   }
