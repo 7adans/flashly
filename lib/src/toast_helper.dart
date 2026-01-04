@@ -12,18 +12,22 @@ enum ToastState {error, info, success}
 
 void showToast(
   String message, {
+  IconData? icon,
+  Color? iconColor,
   ToastState? state = ToastState.success,
   bool enableHaptics = false,
   bool enableSound = false,
 }) {
   if (enableHaptics) haptics();
   if (enableSound) playSound(state == ToastState.error);
-  _showSnackBar(message, state);
+  _showSnackBar(message, state, icon, iconColor);
 }
 
 ScaffoldFeatureController<SnackBar, SnackBarClosedReason> _showSnackBar(
   String text, [
     ToastState? state,
+    IconData? icon,
+    Color? iconColor,
   ]
 ) {
   final content = Container(
@@ -38,14 +42,16 @@ ScaffoldFeatureController<SnackBar, SnackBarClosedReason> _showSnackBar(
       mainAxisSize: MainAxisSize.min,
       children: [
         Icon(
-          state == ToastState.error 
+          icon ??
+          (state == ToastState.error 
             ? CupertinoIcons.exclamationmark_circle
             : state == ToastState.info 
                 ? CupertinoIcons.info_circle
-                : CupertinoIcons.check_mark_circled, 
-          color: state == ToastState.error 
-            ? Colors.red.shade300 
-            : state == ToastState.info ? Colors.amber.shade300 : Colors.green.shade300, 
+                : CupertinoIcons.check_mark_circled), 
+          color: iconColor ??
+            (state == ToastState.error 
+              ? Colors.red.shade300 
+              : state == ToastState.info ? Colors.amber.shade300 : Colors.green.shade300), 
           size: 20,
         ),
         Flexible(

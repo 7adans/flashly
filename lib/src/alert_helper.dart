@@ -144,20 +144,23 @@ Future<T?> _showDialog<T>(
                   ],
                 ),
               ) 
-              else Padding(
+              else Container(
+                width: double.maxFinite,
                 padding: EdgeInsets.symmetric(horizontal: 12),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   spacing: 6,
                   children: [
                     if (title.isNotEmpty) 
-                      Txt(
-                        title, 
-                        fontWeight: FontWeight.bold, 
-                        fontSize: 17,
-                        maxLines: 2,
-                        textAlign: TextAlign.left,
-                        overflow: TextOverflow.ellipsis,
+                      Align(
+                        child: Txt(
+                          title, 
+                          fontWeight: FontWeight.bold, 
+                          fontSize: 17,
+                          maxLines: 2,
+                          textAlign: TextAlign.left,
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ),
                     if (description != null)
                       Txt(
