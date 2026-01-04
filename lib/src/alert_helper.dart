@@ -219,7 +219,7 @@ Future<T?> _showDialog<T>(
   return showDialog<T>(
     context: context ?? Flashly.context,
     barrierDismissible: false,
-    barrierColor: Colors.black26,
+    barrierColor: Colors.black45,
     builder: (context) => Column(
       mainAxisSize: MainAxisSize.min,
       mainAxisAlignment: MainAxisAlignment.center,
@@ -250,7 +250,7 @@ class _AlertContainer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final content = ConstrainedBox(
-      constraints: BoxConstraints(maxWidth: 320, maxHeight: 300),
+      constraints: BoxConstraints(maxWidth: 320, maxHeight: 320),
       child: Dialog(
         elevation: 0,
         insetPadding: EdgeInsets.zero,
