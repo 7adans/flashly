@@ -9,6 +9,7 @@ import 'package:flashly/src/txt.dart';
 import 'package:flashly/src/utils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
 
 enum AlertState { error, info, success }
 
@@ -87,6 +88,16 @@ Future<T?> _showDialog<T>(
     );
   }
 
+  Widget buildIcon(String icon) {
+    return Lottie.asset(
+      icon,
+      width: 50,
+      height: 50,
+      fit: BoxFit.contain,
+      repeat: true,
+    );
+  }
+
   Widget buildChild(BuildContext context) => AnimatedSize(
     duration: Duration(milliseconds: 500),
     curve: Curves.easeInOut,
@@ -109,23 +120,11 @@ Future<T?> _showDialog<T>(
             crossAxisAlignment: asLoader ? CrossAxisAlignment.start : CrossAxisAlignment.center,
             children: [
               if (state == AlertState.success)
-                Icon(
-                  CupertinoIcons.check_mark_circled_solid, 
-                  color: CupertinoColors.activeGreen, 
-                  size: 50,
-                )
+                buildIcon('assets/animations/alert_success.json')
               else if (state == AlertState.error)
-                Icon(
-                  CupertinoIcons.xmark_circle_fill, 
-                  color: CupertinoColors.destructiveRed, 
-                  size: 50,
-                )
+                buildIcon('assets/animations/alert_error.json')
               else if (state == AlertState.info)
-                Icon(
-                  CupertinoIcons.exclamationmark_circle_fill, 
-                  color: infoIconColor ?? CupertinoColors.activeOrange, 
-                  size: 50,
-                ),
+                buildIcon('assets/animations/alert_info.json'),
               if (asLoader) Padding(
                 padding: EdgeInsets.symmetric(horizontal: 8),
                 child: Row(
