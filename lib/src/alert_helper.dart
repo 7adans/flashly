@@ -7,9 +7,7 @@ import 'package:flashly/src/hapticsound_helper.dart';
 import 'package:flashly/src/loader_helper.dart';
 import 'package:flashly/src/txt.dart';
 import 'package:flashly/src/utils.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widget_previews.dart';
 import 'package:lottie/lottie.dart';
 
 enum AlertState { error, info, success }
@@ -96,6 +94,7 @@ Future<T?> _showDialog<T>(
       height: 70,
       fit: BoxFit.cover,
       repeat: true,
+      package: 'flashly',
     );
   }
 
