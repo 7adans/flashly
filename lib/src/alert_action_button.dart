@@ -16,7 +16,6 @@ class AlertActionButton extends StatefulWidget {
     this.radius,
     this.isDestructive = false,
     this.isPositive = false,
-    this.color,
   });
 
   final VoidCallback? onPressed;
@@ -25,7 +24,6 @@ class AlertActionButton extends StatefulWidget {
   final double? fontSize;
   final bool isDestructive, isPositive;
   final double? radius;
-  final Color? color;
 
   @override
   State<AlertActionButton> createState() => _AlertActionButtonState();

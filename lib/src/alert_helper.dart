@@ -78,6 +78,7 @@ Future<T?> _showDialog<T>(
     return AlertActionButton(
       text: negativeTitle ?? 'Cancelar',
       isDestructive: positiveTitle == null && isDestructive,
+      isPositive: onPositive == null,
       radius: actionButtonRadius,
       onPressed: () {
         Navigator.pop(Flashly.context);
@@ -86,11 +87,11 @@ Future<T?> _showDialog<T>(
     );
   }
 
-  Widget buildAnimation(String icon) {
+  Widget buildAnimation(String icon, [double? size]) {
     return Lottie.asset(
       icon,
-      width: 70,
-      height: 70,
+      width: size ?? 70,
+      height: size ?? 70,
       fit: BoxFit.cover,
       repeat: true,
       package: 'flashly',
@@ -133,7 +134,7 @@ Future<T?> _showDialog<T>(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
-                    buildAnimation('assets/animations/wave_animation.json'),
+                    buildAnimation('assets/animations/wave_animation.json', 50),
                     Expanded(child: Txt(title, fontWeight: FontWeight.bold, fontSize: 18)),
                   ],
                 ),
@@ -151,7 +152,7 @@ Future<T?> _showDialog<T>(
                         fontWeight: FontWeight.bold, 
                         fontSize: 18,
                         maxLines: 2,
-                        textAlign: TextAlign.left,
+                        textAlign: TextAlign.center,
                         overflow: TextOverflow.ellipsis,
                       ),
                     if (description != null)
@@ -160,7 +161,7 @@ Future<T?> _showDialog<T>(
                         color: Theme.of(context).colorScheme.onSurface, 
                         fontSize: 17, 
                         maxLines: 7,
-                        textAlign: TextAlign.left,
+                        textAlign: TextAlign.center,
                         fontWeight: FontWeight.w600,
                         overflow: TextOverflow.ellipsis,
                       ),

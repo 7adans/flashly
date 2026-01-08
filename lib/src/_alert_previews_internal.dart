@@ -6,11 +6,11 @@ import 'package:lottie/lottie.dart';
 
 import '../flashly.dart';
 
-Widget buildAnimation(String icon) {
+Widget buildAnimation(String icon, [double? size]) {
   return Lottie.asset(
     icon,
-    width: 70,
-    height: 70,
+    width: size ?? 70,
+    height: size ?? 70,
     fit: BoxFit.cover,
     repeat: true,
     package: 'flashly',
@@ -26,7 +26,6 @@ Widget _buildAlertContent(
   bool asLoader = false,
   VoidCallback? onNegative,
   int? closeLoaderAfterSecs,
-  Color? actionButtonColor,
   Future<void> Function()? onPositive,
   AlertState? state,
 }) {
@@ -38,7 +37,6 @@ Widget _buildAlertContent(
     return AlertActionButton(
       text: negativeTitle ?? 'Cancelar',
       isDestructive: positiveTitle == null && isDestructive,
-      color: actionButtonColor,
       radius: actionButtonRadius,
       onPressed: () {
         Navigator.pop(Flashly.context);
@@ -83,7 +81,7 @@ Widget _buildAlertContent(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
-                    buildAnimation('assets/animations/wave_animation.json'),
+                    buildAnimation('assets/animations/wave_animation.json', 50),
                     Expanded(child: Txt(title, fontWeight: FontWeight.bold, fontSize: 18)),
                   ],
                 ),
