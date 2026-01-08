@@ -42,7 +42,7 @@ class _AlertActionButtonState extends State<AlertActionButton> {
   }) {
     final backgroungColor = widget.isDestructive 
     ? destructiveRed 
-    : _primaryColor.withValues(alpha: widget.isPositive ? 1 : .2);
+    : _primaryColor.withValues(alpha: widget.isPositive ? 1 : .15);
 
     return PressEffect(
       onPressed: widget.onPressed,
