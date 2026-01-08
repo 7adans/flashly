@@ -78,7 +78,7 @@ Future<T?> _showDialog<T>(
     return AlertActionButton(
       text: negativeTitle ?? 'Cancelar',
       isDestructive: positiveTitle == null && isDestructive,
-      isPositive: onPositive == null,
+      isPositive: positiveTitle == null,
       radius: actionButtonRadius,
       onPressed: () {
         Navigator.pop(Flashly.context);
