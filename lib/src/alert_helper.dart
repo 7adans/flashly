@@ -159,7 +159,7 @@ Future<T?> _showDialog<T>(
                         description, 
                         color: Theme.of(context).colorScheme.onSurface, 
                         fontSize: 17, 
-                        maxLines: 5,
+                        maxLines: 7,
                         textAlign: TextAlign.left,
                         fontWeight: FontWeight.w600,
                         overflow: TextOverflow.ellipsis,
@@ -244,7 +244,7 @@ class _AlertContainer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final content = ConstrainedBox(
-      constraints: BoxConstraints(maxWidth: 300, maxHeight: 320),
+      constraints: BoxConstraints(maxWidth: 300, maxHeight: 450),
       child: Dialog(
         elevation: 0,
         insetPadding: EdgeInsets.zero,
