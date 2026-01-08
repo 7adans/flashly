@@ -6,7 +6,7 @@ import 'package:flashly/src/txt.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-class AlertActionButton extends StatelessWidget {
+class AlertActionButton extends StatefulWidget {
   const AlertActionButton({
     super.key,
     required this.onPressed,
@@ -27,31 +27,30 @@ class AlertActionButton extends StatelessWidget {
   final double? radius;
   final Color? color;
 
-  BorderRadius get _borderRadius => BorderRadius.circular(radius ?? 16);
+  @override
+  State<AlertActionButton> createState() => _AlertActionButtonState();
+}
+
+class _AlertActionButtonState extends State<AlertActionButton> {
+  BorderRadius get _borderRadius => BorderRadius.circular(widget.radius ?? 16);
+
+  Color get _primaryColor => Theme.of(context).primaryColor;
 
   Widget _buildButtonDecoration(
     BuildContext context, {
     required Widget child,
   }) {
-    final backgroungColor = isDestructive 
+    final backgroungColor = widget.isDestructive 
     ? destructiveRed 
-    : Theme.of(context).primaryColor.withValues(alpha: isPositive ? .6 : 1);
+    : _primaryColor.withValues(alpha: widget.isPositive ? 1 : .2);
 
     return PressEffect(
-      onPressed: onPressed,
+      onPressed: widget.onPressed,
       child: Container(
-        height: 44,
+        height: 48,
         decoration: BoxDecoration(
           borderRadius: _borderRadius,
-          color: isPositive ? backgroungColor : null,
-          gradient: isPositive ? null : LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              backgroungColor.withValues(alpha: .7),
-              backgroungColor,
-            ],
-          ),
+          color: backgroungColor,
         ),
         child: child,
       ),
@@ -60,13 +59,14 @@ class AlertActionButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final primaryColor = Theme.of(context).primaryColor;
-    final materialBackgroundColor = isDestructive ? destructiveRed : primaryColor;
+    final materialBackgroundColor = widget.isDestructive 
+    ? destructiveRed : _primaryColor;
 
     final child = Txt(
-      text, 
-      fontSize: 16,
-      color: Theme.of(context).cardColor,
+      widget.text, 
+      fontSize: 17,
+      color: widget.isPositive || widget.isDestructive 
+      ? Theme.of(context).cardColor : _primaryColor,
       fontWeight: FontWeight.bold,
     );
 
@@ -77,7 +77,7 @@ class AlertActionButton extends StatelessWidget {
           padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
           borderRadius: _borderRadius,
           color: Colors.transparent,
-          onPressed: onPressed,
+          onPressed: widget.onPressed,
           child: child, 
         ),
       );
@@ -86,7 +86,7 @@ class AlertActionButton extends StatelessWidget {
     return _buildButtonDecoration(
       context,
       child: ElevatedButton(
-        onPressed: onPressed,
+        onPressed: widget.onPressed,
         style: ElevatedButton.styleFrom(
           elevation: 0,
           shadowColor: Colors.transparent,

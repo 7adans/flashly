@@ -4,7 +4,6 @@ import 'dart:ui';
 
 import 'package:flashly/src/alert_action_button.dart';
 import 'package:flashly/src/hapticsound_helper.dart';
-import 'package:flashly/src/loader_helper.dart';
 import 'package:flashly/src/txt.dart';
 import 'package:flashly/src/utils.dart';
 import 'package:flutter/material.dart';
@@ -87,7 +86,7 @@ Future<T?> _showDialog<T>(
     );
   }
 
-  Widget buildIcon(String icon) {
+  Widget buildAnimation(String icon) {
     return Lottie.asset(
       icon,
       width: 70,
@@ -102,7 +101,7 @@ Future<T?> _showDialog<T>(
     duration: Duration(milliseconds: 500),
     curve: Curves.easeInOut,
     child: Padding(
-      padding: EdgeInsets.symmetric(vertical: 20, horizontal: 16),
+      padding: EdgeInsets.all(20),
       child: StatefulBuilder(
         builder: (context, setState) {
           if (!timerStarted && closeLoaderAfterSecs != null) {
@@ -115,59 +114,54 @@ Future<T?> _showDialog<T>(
           }
       
           return Column(
-            spacing: (asLoader && showButton) || !asLoader ? 16 : 0,
+            spacing: (asLoader && showButton) || !asLoader ? 20 : 0,
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: asLoader ? CrossAxisAlignment.start : CrossAxisAlignment.center,
             children: [
-              if (state == AlertState.success)
-                buildIcon('assets/animations/alert_success.json')
-              else if (state == AlertState.error)
-                buildIcon('assets/animations/alert_error.json')
-              else if (state == AlertState.info)
-                buildIcon('assets/animations/alert_info.json'),
+              if (state != null && !asLoader) ...[
+                if (state == AlertState.success)
+                  buildAnimation('assets/animations/alert_success.json')
+                else if (state == AlertState.error)
+                  buildAnimation('assets/animations/alert_error.json')
+                else if (state == AlertState.info)
+                  buildAnimation('assets/animations/alert_info.json'),
+              ],
               if (asLoader) Padding(
                 padding: EdgeInsets.symmetric(horizontal: 8),
                 child: Row(
-                  spacing: 18,
+                  spacing: 20,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
-                    loader(),
-                    Expanded(
-                      child: Txt(
-                        title,
-                        fontWeight: FontWeight.bold, 
-                        fontSize: 17, 
-                      ),
-                    ),
+                    buildAnimation('assets/animations/wave_animation.json'),
+                    Expanded(child: Txt(title, fontWeight: FontWeight.bold, fontSize: 18)),
                   ],
                 ),
               ) 
               else Container(
                 width: double.maxFinite,
-                padding: EdgeInsets.symmetric(horizontal: 12),
+                padding: EdgeInsets.symmetric(horizontal: 20),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  spacing: 6,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  spacing: 12,
                   children: [
                     if (title.isNotEmpty) 
-                      Align(
-                        child: Txt(
-                          title, 
-                          fontWeight: FontWeight.bold, 
-                          fontSize: 17,
-                          maxLines: 2,
-                          textAlign: TextAlign.left,
-                          overflow: TextOverflow.ellipsis,
-                        ),
+                      Txt(
+                        title, 
+                        fontWeight: FontWeight.bold, 
+                        fontSize: 18,
+                        maxLines: 2,
+                        textAlign: TextAlign.left,
+                        overflow: TextOverflow.ellipsis,
                       ),
                     if (description != null)
                       Txt(
                         description, 
                         color: Theme.of(context).colorScheme.onSurface, 
-                        fontSize: 15, 
-                        maxLines: 4,
+                        fontSize: 17, 
+                        maxLines: 5,
                         textAlign: TextAlign.left,
+                        fontWeight: FontWeight.w600,
                         overflow: TextOverflow.ellipsis,
                       ),
                   ],
@@ -250,7 +244,7 @@ class _AlertContainer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final content = ConstrainedBox(
-      constraints: BoxConstraints(maxWidth: 320, maxHeight: 320),
+      constraints: BoxConstraints(maxWidth: 280, maxHeight: 320),
       child: Dialog(
         elevation: 0,
         insetPadding: EdgeInsets.zero,

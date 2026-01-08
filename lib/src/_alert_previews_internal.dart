@@ -1,10 +1,21 @@
 import 'dart:ui';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widget_previews.dart';
+import 'package:lottie/lottie.dart';
 
 import '../flashly.dart';
+
+Widget buildAnimation(String icon) {
+  return Lottie.asset(
+    icon,
+    width: 70,
+    height: 70,
+    fit: BoxFit.cover,
+    repeat: true,
+    package: 'flashly',
+  );
+}
 
 Widget _buildAlertContent(
   String title, {
@@ -17,18 +28,30 @@ Widget _buildAlertContent(
   int? closeLoaderAfterSecs,
   Color? actionButtonColor,
   Future<void> Function()? onPositive,
+  AlertState? state,
 }) {
   bool showButton = false;
   bool timerStarted = false;
+  double actionButtonRadius = 16.0;
+
+  Widget buildDefaultActionButton() {
+    return AlertActionButton(
+      text: negativeTitle ?? 'Cancelar',
+      isDestructive: positiveTitle == null && isDestructive,
+      color: actionButtonColor,
+      radius: actionButtonRadius,
+      onPressed: () {
+        Navigator.pop(Flashly.context);
+        if (onNegative != null) onNegative();
+      },
+    );
+  }
 
   return AnimatedSize(
     duration: Duration(milliseconds: 500),
     curve: Curves.easeInOut,
     child: Padding(
-      padding: EdgeInsets.symmetric(
-        vertical: asLoader ? 32 : 20, 
-        horizontal: 16,
-      ),
+      padding: EdgeInsets.all(20),
       child: StatefulBuilder(
         builder: (context, setState) {
           if (!timerStarted && closeLoaderAfterSecs != null) {
@@ -41,58 +64,55 @@ Widget _buildAlertContent(
           }
       
           return Column(
-            spacing: (asLoader && showButton) || !asLoader ? 16 : 0,
+            spacing: (asLoader && showButton) || !asLoader ? 20 : 0,
             mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: asLoader ? CrossAxisAlignment.start : CrossAxisAlignment.center,
             children: [
+              if (state != null && !asLoader) ...[
+                if (state == AlertState.success)
+                  buildAnimation('assets/animations/alert_success.json')
+                else if (state == AlertState.error)
+                  buildAnimation('assets/animations/alert_error.json')
+                else if (state == AlertState.info)
+                  buildAnimation('assets/animations/alert_info.json'),
+              ],
               if (asLoader) Padding(
                 padding: EdgeInsets.symmetric(horizontal: 8),
                 child: Row(
-                  spacing: 18,
+                  spacing: 20,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
-                    Container(
-                      alignment: Alignment.center,
-                      width: 30, height: 30,
-                      child: ColorFiltered(
-                        colorFilter: ColorFilter.mode(Colors.black, BlendMode.srcATop),
-                        child: Transform.scale(
-                          scale: 1.2,
-                          child: CircularProgressIndicator.adaptive(
-                            valueColor: AlwaysStoppedAnimation(Colors.black),
-                          ),
-                        ),
-                      ),
-                    ),
-                    Expanded(
-                      child: Txt(
-                        title,
-                        fontWeight: FontWeight.bold, 
-                        fontSize: 17, 
-                      ),
-                    ),
+                    buildAnimation('assets/animations/wave_animation.json'),
+                    Expanded(child: Txt(title, fontWeight: FontWeight.bold, fontSize: 18)),
                   ],
                 ),
               ) 
-              else Padding(
-                padding: EdgeInsets.symmetric(horizontal: 12),
+              else Container(
+                width: double.maxFinite,
+                padding: EdgeInsets.symmetric(horizontal: 20),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  spacing: 2,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  spacing: 12,
                   children: [
                     if (title.isNotEmpty) 
                       Txt(
                         title, 
                         fontWeight: FontWeight.bold, 
-                        fontSize: 17,
+                        fontSize: 18,
+                        maxLines: 2,
+                        textAlign: TextAlign.left,
+                        overflow: TextOverflow.ellipsis,
                       ),
                     if (description != null)
                       Txt(
                         description, 
-                        color: Theme.of(context).colorScheme.onSurface.withValues(alpha: .6), 
-                        fontSize: 15, 
-                        fontWeight: FontWeight.w600, 
+                        color: Theme.of(context).colorScheme.onSurface, 
+                        fontSize: 17, 
+                        maxLines: 5,
+                        textAlign: TextAlign.left,
+                        fontWeight: FontWeight.w600,
+                        overflow: TextOverflow.ellipsis,
                       ),
                   ],
                 ),
@@ -102,67 +122,33 @@ Widget _buildAlertContent(
                 mainAxisSize: MainAxisSize.min,
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  if (!asLoader)
-                    Expanded(
-                      child: CupertinoButton.filled(
-                        padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                        borderRadius: BorderRadius.circular(26),
-                        color: Theme.of(context).colorScheme.onSurface.withValues(alpha: .07),
-                        onPressed: () {
-                          Navigator.pop(Flashly.context);
-                          if (onNegative != null) onNegative();
-                        },
-                        child: Txt(
-                          negativeTitle ?? 'Cancelar', 
-                          fontSize: 17,
-                          color: isDestructive ? CupertinoColors.destructiveRed : null,
-                          fontWeight: FontWeight.w700,
-                        ), 
-                      ),
-                    ),
-                  if (positiveTitle != null && !asLoader)
-                    Expanded(
-                      child: CupertinoButton.filled(
-                        padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                        borderRadius: BorderRadius.circular(26),
-                        color: Theme.of(context).colorScheme.onSurface.withValues(alpha: .07),
-                        onPressed: () {
-                          Navigator.pop(Flashly.context);
-                          if (onPositive != null) onPositive();
-                        },
-                        child: Txt(
-                          positiveTitle, 
-                          fontSize: 17,
-                          color: isDestructive ? CupertinoColors.destructiveRed : actionButtonColor,
-                          fontWeight: FontWeight.w700,
-                        ), 
-                      ),
-                    ),
-                    if (asLoader) Expanded(
+                  if (asLoader) Expanded(
                       child: AnimatedScale(
                         scale: showButton ? 1.0 : .5,
                         duration: const Duration(milliseconds: 500),
                         child: Visibility(
-                          visible: showButton && positiveTitle != null,
+                          visible: showButton,
                           maintainSize: false,
                           maintainAnimation: true,
                           maintainState: true,
-                          child: CupertinoButton.filled(
-                            padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                            borderRadius: BorderRadius.circular(26),
-                            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: .07),
-                            onPressed: () {
-                              Navigator.pop(Flashly.context);
-                              if (onPositive != null) onPositive();
-                            },
-                            child: Txt(
-                              positiveTitle!, 
-                              fontSize: 17,
-                              color: isDestructive ? CupertinoColors.destructiveRed : null,
-                              fontWeight: FontWeight.w700,
-                            ), 
-                          ),
+                          child: buildDefaultActionButton(),
                         ),
+                      ),
+                    )
+                  else
+                    Expanded(child: buildDefaultActionButton()),
+
+                  if (positiveTitle != null && !asLoader)
+                    Expanded(
+                      child: AlertActionButton(
+                        text: positiveTitle,
+                        isPositive: !isDestructive,
+                        isDestructive: isDestructive,
+                        radius: actionButtonRadius,
+                        onPressed: () {
+                          Navigator.pop(Flashly.context);
+                          if (onPositive != null) onPositive();
+                        },
                       ),
                     ),
                 ],
@@ -179,85 +165,92 @@ Widget _buildAlertContent(
 Widget alertPreview() {
   return MaterialApp(
     home: Scaffold(
-      backgroundColor: Colors.black,
-      body: ConstrainedBox(
-      constraints: BoxConstraints(maxWidth: 320, maxHeight: 300),
-      child: Dialog(
-        elevation: 0,
-        insetPadding: EdgeInsets.zero,
-        backgroundColor: Colors.transparent,
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(26),
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
-            child: AnimatedContainer(
-              duration: Duration(milliseconds: 400),
-              curve: Curves.easeOutCubic,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(26),
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [
-                    Colors.white.withValues(alpha: 0.25),
-                    Colors.white.withValues(alpha: 0.15),
-                    Colors.white.withValues(alpha: 0.08),
-                    Colors.white.withValues(alpha: 0.12),
-                  ],
-                  stops: [0.0, 0.3, 0.7, 1.0],
-                ),
-                color: null,
-                border: Border.all(
-                  width: .6,
-                  color: Colors.white.withValues(alpha: 0.4),
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.white.withValues(alpha: 0.6),
-                    offset: Offset(0, 1),
-                    blurRadius: 0,
-                    spreadRadius: 0,
-                    blurStyle: BlurStyle.inner,
-                  ),
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.05),
-                    offset: Offset(0, 8),
-                    blurRadius: 32,
-                    spreadRadius: -8,
-                  ),
-                ],
-              ),
-              child: Container(
+      backgroundColor: Colors.white,
+      body: Center(
+        child: ConstrainedBox(
+        constraints: BoxConstraints(maxWidth: 320, maxHeight: 300),
+        child: Dialog(
+          elevation: 0,
+          insetPadding: EdgeInsets.zero,
+          backgroundColor: Colors.transparent,
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(26),
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+              child: AnimatedContainer(
+                duration: Duration(milliseconds: 400),
+                curve: Curves.easeOutCubic,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(26),
                   gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
                     colors: [
+                      Colors.white.withValues(alpha: 0.25),
+                      Colors.white.withValues(alpha: 0.15),
                       Colors.white.withValues(alpha: 0.08),
-                      Colors.white.withValues(alpha: 0.02),
+                      Colors.white.withValues(alpha: 0.12),
                     ],
+                    stops: [0.0, 0.3, 0.7, 1.0],
                   ),
+                  color: null,
+                  border: Border.all(
+                    width: .6,
+                    color: Colors.white.withValues(alpha: 0.4),
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.white.withValues(alpha: 0.6),
+                      offset: Offset(0, 1),
+                      blurRadius: 0,
+                      spreadRadius: 0,
+                      blurStyle: BlurStyle.inner,
+                    ),
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.05),
+                      offset: Offset(0, 8),
+                      blurRadius: 32,
+                      spreadRadius: -8,
+                    ),
+                  ],
                 ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(26),
-                  child: BackdropFilter(
-                    filter: ImageFilter.blur(sigmaX: 4, sigmaY: 4),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        gradient: RadialGradient(
-                          center: Alignment.topLeft,
-                          radius: 2.0,
-                          colors: [
-                            Colors.white.withValues(alpha: 0.03),
-                            Colors.transparent,
-                          ],
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(26),
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        Colors.white.withValues(alpha: 0.08),
+                        Colors.white.withValues(alpha: 0.02),
+                      ],
+                    ),
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(26),
+                    child: BackdropFilter(
+                      filter: ImageFilter.blur(sigmaX: 4, sigmaY: 4),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          gradient: RadialGradient(
+                            center: Alignment.topLeft,
+                            radius: 2.0,
+                            colors: [
+                              Colors.white.withValues(alpha: 0.03),
+                              Colors.transparent,
+                            ],
+                          ),
                         ),
-                      ),
-                      child: _buildAlertContent(
-                        'Alert Title',
-                        // asLoader: true,
-                        // positiveTitle: 'Fechar'
+                        child: _buildAlertContent(
+                          'Alert Title',
+                          asLoader: true,
+                          description: 'Esta é uma descrição',
+                          state: AlertState.info,
+                          // positiveTitle: 'Confirmar',
+                          // isDestructive: true,
+                          // asLoader: true,
+                          // positiveTitle: 'Fechar'
+                        ),
                       ),
                     ),
                   ),
@@ -266,8 +259,8 @@ Widget alertPreview() {
             ),
           ),
         ),
+            ),
       ),
-    ),
     ),
   );
 }
