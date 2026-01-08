@@ -134,7 +134,7 @@ Future<T?> _showDialog<T>(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
-                    buildAnimation('assets/animations/wave_animation.json', 50),
+                    buildAnimation('assets/animations/loading.json', 50),
                     Expanded(child: Txt(title, fontWeight: FontWeight.bold, fontSize: 18)),
                   ],
                 ),

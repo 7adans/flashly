@@ -77,11 +77,11 @@ Widget _buildAlertContent(
               if (asLoader) Padding(
                 padding: EdgeInsets.symmetric(horizontal: 8),
                 child: Row(
-                  spacing: 20,
+                  spacing: 10,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
-                    buildAnimation('assets/animations/wave_animation.json', 50),
+                    buildAnimation('assets/animations/loading.json'),
                     Expanded(child: Txt(title, fontWeight: FontWeight.bold, fontSize: 18)),
                   ],
                 ),
