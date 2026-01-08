@@ -244,7 +244,7 @@ class _AlertContainer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final content = ConstrainedBox(
-      constraints: BoxConstraints(maxWidth: 280, maxHeight: 320),
+      constraints: BoxConstraints(maxWidth: 300, maxHeight: 320),
       child: Dialog(
         elevation: 0,
         insetPadding: EdgeInsets.zero,

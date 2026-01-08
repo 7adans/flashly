@@ -68,6 +68,8 @@ class _AlertActionButtonState extends State<AlertActionButton> {
       color: widget.isPositive || widget.isDestructive 
       ? Theme.of(context).cardColor : _primaryColor,
       fontWeight: FontWeight.bold,
+      maxLines: 1,
+      overflow: .ellipsis,
     );
 
     if (Platform.isIOS) {
