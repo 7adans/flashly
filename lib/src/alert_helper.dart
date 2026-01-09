@@ -130,12 +130,12 @@ Future<T?> _showDialog<T>(
               if (asLoader) Padding(
                 padding: EdgeInsets.symmetric(horizontal: 8),
                 child: Row(
-                  spacing: 20,
+                  spacing: 16,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     buildAnimation('assets/animations/loading.json', 50),
-                    Expanded(child: Txt(title, fontWeight: FontWeight.bold, fontSize: 18)),
+                    Expanded(child: Txt(title, fontWeight: FontWeight.w600, fontSize: 16)),
                   ],
                 ),
               ) 
