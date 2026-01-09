@@ -102,7 +102,7 @@ Future<T?> _showDialog<T>(
     duration: Duration(milliseconds: 500),
     curve: Curves.easeInOut,
     child: Padding(
-      padding: EdgeInsets.all(20),
+      padding: EdgeInsets.symmetric(horizontal: 20, vertical: 30),
       child: StatefulBuilder(
         builder: (context, setState) {
           if (!timerStarted && closeLoaderAfterSecs != null) {
@@ -149,7 +149,7 @@ Future<T?> _showDialog<T>(
                       Txt(
                         title, 
                         fontWeight: FontWeight.bold, 
-                        fontSize: 19,
+                        fontSize: 18,
                         maxLines: 2,
                         textAlign: TextAlign.center,
                         overflow: TextOverflow.ellipsis,
