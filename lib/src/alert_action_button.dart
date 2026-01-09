@@ -62,10 +62,10 @@ class _AlertActionButtonState extends State<AlertActionButton> {
 
     final child = Txt(
       widget.text, 
-      fontSize: 17,
+      fontSize: 18,
       color: widget.isPositive || widget.isDestructive 
       ? Theme.of(context).cardColor : _primaryColor,
-      fontWeight: FontWeight.bold,
+      fontWeight: FontWeight.w800,
       maxLines: 1,
       overflow: .ellipsis,
     );

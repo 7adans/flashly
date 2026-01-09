@@ -139,9 +139,8 @@ Future<T?> _showDialog<T>(
                   ],
                 ),
               ) 
-              else Container(
+              else SizedBox(
                 width: double.maxFinite,
-                padding: EdgeInsets.symmetric(horizontal: 20),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   spacing: 12,
@@ -150,7 +149,7 @@ Future<T?> _showDialog<T>(
                       Txt(
                         title, 
                         fontWeight: FontWeight.bold, 
-                        fontSize: 18,
+                        fontSize: 19,
                         maxLines: 2,
                         textAlign: TextAlign.center,
                         overflow: TextOverflow.ellipsis,
@@ -159,7 +158,7 @@ Future<T?> _showDialog<T>(
                       Txt(
                         description, 
                         color: Theme.of(context).colorScheme.onSurface, 
-                        fontSize: 17, 
+                        fontSize: 16, 
                         maxLines: 7,
                         textAlign: TextAlign.center,
                         fontWeight: FontWeight.w600,
@@ -245,7 +244,7 @@ class _AlertContainer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final content = ConstrainedBox(
-      constraints: BoxConstraints(maxWidth: 300, maxHeight: 450),
+      constraints: BoxConstraints(maxWidth: 320, maxHeight: 450),
       child: Dialog(
         elevation: 0,
         insetPadding: EdgeInsets.zero,
