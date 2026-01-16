@@ -40,17 +40,14 @@ class _AlertActionButtonState extends State<AlertActionButton> {
     required Widget child,
   }) {
     late Color backgroungColor;
-    
-    if (widget.isDestructive) {
+
+    if (widget.isDestrutiveCancel) {
+      backgroungColor = destructiveRed.withValues(alpha: .15);
+    } else if (widget.isDestructive) {
       backgroungColor = destructiveRed;
     } else if (widget.isPositive) {
       backgroungColor = _primaryColor.withValues(alpha: 1);
     } else {
-
-      if (widget.isDestrutiveCancel) {
-        backgroungColor = destructiveRed.withValues(alpha: .15);
-      }
-
       backgroungColor = _primaryColor.withValues(alpha: .15);
     } 
 
@@ -69,14 +66,27 @@ class _AlertActionButtonState extends State<AlertActionButton> {
 
   @override
   Widget build(BuildContext context) {
-    final materialBackgroundColor = widget.isDestructive 
-    ? destructiveRed : _primaryColor;
+    late Color overlayColor;
+    late Color color;
+
+    if (widget.isDestrutiveCancel || widget.isDestructive) {
+      overlayColor = destructiveRed;
+    } else {
+      overlayColor = _primaryColor;
+    } 
+
+    if (widget.isDestrutiveCancel) {
+      color = destructiveRed;
+    } else if (widget.isPositive || widget.isDestructive) {
+      color = Theme.of(context).cardColor;
+    } else {
+      color = _primaryColor;
+    }
 
     final child = Txt(
       widget.text, 
       fontSize: 17,
-      color: widget.isPositive || widget.isDestructive 
-      ? Theme.of(context).cardColor : (widget.isDestrutiveCancel ? destructiveRed : _primaryColor),
+      color: color,
       fontWeight: FontWeight.w800,
       maxLines: 1,
       overflow: .ellipsis,
@@ -103,7 +113,7 @@ class _AlertActionButtonState extends State<AlertActionButton> {
           elevation: 0,
           shadowColor: Colors.transparent,
           surfaceTintColor: Colors.transparent,
-          overlayColor: materialBackgroundColor.withValues(alpha: .04),
+          overlayColor: overlayColor.withValues(alpha: .04),
           backgroundColor: Colors.transparent,
           padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
           shape: RoundedSuperellipseBorder(borderRadius: _borderRadius),
