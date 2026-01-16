@@ -9,7 +9,7 @@ import 'package:flashly/src/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 
-enum AlertState { error, info, success }
+enum AlertState { error, warning, info, success }
 
 Future<T?> showAlert<T>(
   String title, {
@@ -126,7 +126,9 @@ Future<T?> _showDialog<T>(
                 else if (state == AlertState.error)
                   buildAnimation('assets/animations/alert_error.json')
                 else if (state == AlertState.info)
-                  buildAnimation('assets/animations/alert_info.json'),
+                  buildAnimation('assets/animations/alert_info.json')
+                else if (state == AlertState.warning)
+                  buildAnimation('assets/animations/warning.json'),
               ],
               if (asLoader) Padding(
                 padding: EdgeInsets.symmetric(horizontal: 8),
