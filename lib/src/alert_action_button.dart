@@ -15,6 +15,7 @@ class AlertActionButton extends StatefulWidget {
     this.fontWeight,
     this.radius,
     this.isDestructive = false,
+    this.isDestrutiveCancel = false,
     this.isPositive = false,
   });
 
@@ -22,7 +23,7 @@ class AlertActionButton extends StatefulWidget {
   final FontWeight? fontWeight;
   final String text;
   final double? fontSize;
-  final bool isDestructive, isPositive;
+  final bool isDestructive, isPositive, isDestrutiveCancel;
   final double? radius;
 
   @override
@@ -38,9 +39,20 @@ class _AlertActionButtonState extends State<AlertActionButton> {
     BuildContext context, {
     required Widget child,
   }) {
-    final backgroungColor = widget.isDestructive 
-    ? destructiveRed 
-    : _primaryColor.withValues(alpha: widget.isPositive ? 1 : .15);
+    late Color backgroungColor;
+    
+    if (widget.isDestructive) {
+      backgroungColor = destructiveRed;
+    } else if (widget.isPositive) {
+      backgroungColor = _primaryColor.withValues(alpha: 1);
+    } else {
+
+      if (widget.isDestrutiveCancel) {
+        backgroungColor = destructiveRed.withValues(alpha: .15);
+      }
+
+      backgroungColor = _primaryColor.withValues(alpha: .15);
+    } 
 
     return PressEffect(
       onPressed: widget.onPressed,
@@ -64,7 +76,7 @@ class _AlertActionButtonState extends State<AlertActionButton> {
       widget.text, 
       fontSize: 17,
       color: widget.isPositive || widget.isDestructive 
-      ? Theme.of(context).cardColor : _primaryColor,
+      ? Theme.of(context).cardColor : (widget.isDestrutiveCancel ? destructiveRed : _primaryColor),
       fontWeight: FontWeight.w800,
       maxLines: 1,
       overflow: .ellipsis,

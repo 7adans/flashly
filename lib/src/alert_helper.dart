@@ -78,6 +78,7 @@ Future<T?> _showDialog<T>(
     return AlertActionButton(
       text: negativeTitle ?? 'Cancelar',
       isDestructive: positiveTitle == null && isDestructive,
+      isDestrutiveCancel: positiveTitle != null && isDestructive,
       isPositive: positiveTitle == null,
       radius: actionButtonRadius,
       onPressed: () {
