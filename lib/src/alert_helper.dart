@@ -103,7 +103,7 @@ Future<T?> _showDialog<T>(
     duration: Duration(milliseconds: 500),
     curve: Curves.easeInOut,
     child: Padding(
-      padding: EdgeInsets.symmetric(horizontal: 20, vertical: asLoader ? 0 : 25),
+      padding: EdgeInsets.symmetric(horizontal: 20, vertical: asLoader ? 14 : 25),
       child: StatefulBuilder(
         builder: (context, setState) {
           if (!timerStarted && closeLoaderAfterSecs != null) {
