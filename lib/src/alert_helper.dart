@@ -103,7 +103,7 @@ Future<T?> _showDialog<T>(
     duration: Duration(milliseconds: 500),
     curve: Curves.easeInOut,
     child: Padding(
-      padding: EdgeInsets.symmetric(horizontal: 20, vertical: asLoader ? 20 : 25),
+      padding: EdgeInsets.symmetric(horizontal: 20, vertical: asLoader ? 0 : 25),
       child: StatefulBuilder(
         builder: (context, setState) {
           if (!timerStarted && closeLoaderAfterSecs != null) {
@@ -138,7 +138,7 @@ Future<T?> _showDialog<T>(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     buildAnimation('assets/animations/loading.json', 50),
-                    Expanded(child: Txt(title, fontWeight: FontWeight.w600, fontSize: 16)),
+                    Expanded(child: Txt(title, fontWeight: FontWeight.w500, fontSize: 16)),
                   ],
                 ),
               ) 
@@ -161,10 +161,10 @@ Future<T?> _showDialog<T>(
                       Txt(
                         description, 
                         color: Theme.of(context).colorScheme.onSurface, 
-                        fontSize: 16, 
+                        fontSize: 15, 
                         maxLines: 7,
                         textAlign: TextAlign.center,
-                        fontWeight: FontWeight.w600,
+                        fontWeight: FontWeight.w500,
                         overflow: TextOverflow.ellipsis,
                       ),
                   ],
