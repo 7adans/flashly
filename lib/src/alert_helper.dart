@@ -93,7 +93,7 @@ Future<T?> _showDialog<T>(
       isPositive: positiveTitle == null,
       radius: actionButtonRadius,
       onPressed: () {
-        Navigator.pop(Flashly.context);
+        Navigator.pop(context ?? Flashly.context);
         if (onNegative != null) onNegative();
       },
     );
@@ -110,17 +110,17 @@ Future<T?> _showDialog<T>(
     );
   }
 
-  Widget buildChild(BuildContext context) => AnimatedSize(
+  Widget buildChild() => AnimatedSize(
     duration: Duration(milliseconds: 500),
     curve: Curves.easeInOut,
     child: Padding(
       padding: EdgeInsets.symmetric(horizontal: 20, vertical: asLoader ? 14 : 25),
       child: StatefulBuilder(
-        builder: (context, setState) {
+        builder: (ctx, setState) {
           if (!timerStarted && closeLoaderAfterSecs != null) {
             timerStarted = true;
             Future.delayed(Duration(seconds: closeLoaderAfterSecs), () {
-              if (context.mounted && Navigator.canPop(Flashly.context)) {
+              if (ctx.mounted && Navigator.canPop(context ?? Flashly.context)) {
                 setState(() => showButton = true);
               }
             });
@@ -168,7 +168,7 @@ Future<T?> _showDialog<T>(
                           fontWeight: FontWeight.bold,
                           onTap2: onTapRichTitle,
                           decoration2: .underline,
-                          color2: richTitleColor ?? Theme.of(context).primaryColor,
+                          color2: richTitleColor ?? Theme.of(ctx).primaryColor,
                           textAlign: TextAlign.center,
                           textOverflow1: TextOverflow.ellipsis,
                           textOverflow2: .ellipsis,
@@ -186,7 +186,7 @@ Future<T?> _showDialog<T>(
                     if (description != null)
                       Txt(
                         description, 
-                        color: Theme.of(context).colorScheme.onSurface, 
+                        color: Theme.of(ctx).colorScheme.onSurface, 
                         fontSize: 15, 
                         maxLines: 7,
                         textAlign: TextAlign.center,
@@ -225,7 +225,7 @@ Future<T?> _showDialog<T>(
                         isDestructive: isDestructive,
                         radius: actionButtonRadius,
                         onPressed: () {
-                          Navigator.pop(Flashly.context);
+                          Navigator.pop(context ??Flashly.context);
                           if (onPositive != null) onPositive();
                         },
                       ),
@@ -259,7 +259,7 @@ Future<T?> _showDialog<T>(
             child: _AlertContainer(
               asLoader: asLoader,
               radius: radius,
-              child: buildChild(context),
+              child: buildChild(),
             ),
           ),
         ),
@@ -312,7 +312,7 @@ class _AlertContainer extends StatelessWidget {
                   ],
                   stops: [0.0, 0.3, 0.7, 1.0],
                 ) : null,
-                color: Platform.isIOS ? null : Theme.of(Flashly.context).cardColor,
+                color: Platform.isIOS ? null : Theme.of(context).cardColor,
                 border: Platform.isIOS ? Border.all(
                   width: .6,
                   color: Theme.of(context).cardColor.withValues(alpha: 0.4),
