@@ -236,8 +236,8 @@ Future<T?> _showDialog<T>(
     barrierDismissible: false,
     barrierColor: Colors.black45,
     builder: (context) => SingleChildScrollView(
-      child: ConstrainedBox(
-        constraints: BoxConstraints(minHeight: .maxFinite),
+      child: SizedBox(
+        height: MediaQuery.of(context).size.height,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.center,
