@@ -243,22 +243,27 @@ Future<T?> _showDialog<T>(
     context: context ?? Flashly.context,
     barrierDismissible: false,
     barrierColor: Colors.black45,
-    builder: (context) => SizedBox(
-      height: MediaQuery.of(context).size.height,
-      child: SingleChildScrollView(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: List<Widget>.generate(
-            1, (index) => _AlertContainer(
-              asLoader: asLoader, 
+    builder: (context) {
+      final size = MediaQuery.of(context).size;
+
+      return Dialog(
+        backgroundColor: Colors.transparent,
+        insetPadding: EdgeInsets.zero,
+        child: ConstrainedBox(
+          constraints: BoxConstraints(
+            minHeight: size.height,
+            minWidth: size.width,
+          ),
+          child: Center(
+            child: _AlertContainer(
+              asLoader: asLoader,
               radius: radius,
-              child: buildChild(context), 
+              child: buildChild(context),
             ),
           ),
         ),
-      ),
-    ),
+      );
+    },
   );
 }
 
