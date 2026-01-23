@@ -254,15 +254,17 @@ Widget alertPreview() {
                             ],
                           ),
                         ),
-                        child: _buildAlertContent(
-                          'Alert Title',
-                          asLoader: true,
-                          description: 'Esta é uma descrição',
-                          state: AlertState.info,
-                          // positiveTitle: 'Confirmar',
-                          // isDestructive: true,
-                          // asLoader: true,
-                          // positiveTitle: 'Fechar'
+                        child: SingleChildScrollView(
+                          child: _buildAlertContent(
+                            'Alert Title',
+                            asLoader: true,
+                            description: 'Esta é uma descrição',
+                            state: AlertState.info,
+                            // positiveTitle: 'Confirmar',
+                            // isDestructive: true,
+                            // asLoader: true,
+                            // positiveTitle: 'Fechar'
+                          ),
                         ),
                       ),
                     ),

@@ -217,16 +217,14 @@ Future<T?> _showDialog<T>(
     context: context ?? Flashly.context,
     barrierDismissible: false,
     barrierColor: Colors.black45,
-    builder: (context) => SingleChildScrollView(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: List<Widget>.generate(
-          1, (index) => _AlertContainer(
-            asLoader: asLoader, 
-            radius: radius,
-            child: buildChild(context),
-          ),
+    builder: (context) => Column(
+      mainAxisSize: MainAxisSize.min,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: List<Widget>.generate(
+        1, (index) => _AlertContainer(
+          asLoader: asLoader,
+          radius: radius,
+          child: SingleChildScrollView(child: buildChild(context)),
         ),
       ),
     ),
