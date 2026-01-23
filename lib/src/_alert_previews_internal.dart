@@ -159,6 +159,21 @@ Widget _buildAlertContent(
   );
 }
 
+@Preview(name: 'Loader')
+Widget loaderPreview() {
+  return MaterialApp(
+    home: Scaffold(
+      backgroundColor: Colors.white,
+      body: Center(
+        child: CircularProgressIndicator(
+          valueColor: AlwaysStoppedAnimation(Colors.blue),
+          strokeWidth: 2.0,
+        ),
+      ),
+    ),
+  );
+}
+
 @Preview(name: 'Alert')
 Widget alertPreview() {
   return MaterialApp(

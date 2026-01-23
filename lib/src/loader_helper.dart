@@ -11,11 +11,13 @@ Widget loader({
   Color? color, 
   Key? key, 
   double? scaleFactor,
+  double? androidStrokeWidth,
 }) {
   final indicator = Transform.scale(
     scale: scaleFactor ?? (Platform.isIOS ? 1.2 : 1),
     child: CircularProgressIndicator.adaptive(
       valueColor: AlwaysStoppedAnimation(color),
+      strokeWidth: androidStrokeWidth ?? 2,
     ),
   );
 
