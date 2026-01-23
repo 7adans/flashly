@@ -9,6 +9,8 @@ import 'package:flashly/src/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 
+import 'rich_txt.dart';
+
 enum AlertState { error, warning, info, success }
 
 Future<T?> showAlert<T>(
@@ -57,6 +59,7 @@ Future<T?> showAlert<T>(
 
 Future<T?> _showDialog<T>(
   String title, {
+  String? richTitle,
   String? description,
   String? negativeTitle,
   String? positiveTitle,
@@ -148,15 +151,28 @@ Future<T?> _showDialog<T>(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   spacing: 12,
                   children: [
-                    if (title.isNotEmpty) 
-                      Txt(
-                        title, 
-                        fontWeight: FontWeight.bold, 
-                        fontSize: 18,
-                        maxLines: 2,
-                        textAlign: TextAlign.center,
-                        overflow: TextOverflow.ellipsis,
-                      ),
+                    if (title.isNotEmpty) ...[
+                      if (richTitle != null)
+                        RichTxt(
+                          text1: title, 
+                          text2: richTitle,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold, 
+                          color2: Theme.of(context).primaryColor,
+                          textAlign: TextAlign.center,
+                          textOverflow1: TextOverflow.ellipsis,
+                          textOverflow2: .ellipsis,
+                        )
+                      else 
+                        Txt(
+                          title, 
+                          fontWeight: FontWeight.bold, 
+                          fontSize: 18,
+                          maxLines: 2,
+                          textAlign: TextAlign.center,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                    ],
                     if (description != null)
                       Txt(
                         description, 
