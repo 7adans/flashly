@@ -15,6 +15,7 @@ enum AlertState { error, warning, info, success }
 
 Future<T?> showAlert<T>(
   String title, {
+  String? richTitle,
   String? description,
   String? negativeTitle,
   String? positiveTitle,
@@ -42,6 +43,7 @@ Future<T?> showAlert<T>(
   return await _showDialog<T>(
     title,
     description: description,
+    richTitle: richTitle,
     negativeTitle: negativeTitle,
     positiveTitle: positiveTitle,
     isDestructive: isDestructive,
