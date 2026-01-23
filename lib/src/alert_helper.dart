@@ -71,6 +71,8 @@ Future<T?> _showDialog<T>(
   VoidCallback? onNegative,
   int? closeLoaderAfterSecs,
   Future<void> Function()? onPositive,
+  VoidCallback? onTapRichTitle,
+  Color? richTitleColor,
   AlertState? state,
   Color? infoIconColor,
   double? radius,
@@ -159,8 +161,10 @@ Future<T?> _showDialog<T>(
                           text1: title, 
                           text2: richTitle,
                           fontSize: 18,
-                          fontWeight: FontWeight.bold, 
-                          color2: Theme.of(context).primaryColor,
+                          fontWeight: FontWeight.bold,
+                          onTap2: onTapRichTitle,
+                          decoration2: .underline,
+                          color2: richTitleColor ?? Theme.of(context).primaryColor,
                           textAlign: TextAlign.center,
                           textOverflow1: TextOverflow.ellipsis,
                           textOverflow2: .ellipsis,
@@ -235,9 +239,9 @@ Future<T?> _showDialog<T>(
     context: context ?? Flashly.context,
     barrierDismissible: false,
     barrierColor: Colors.black45,
-    builder: (context) => SingleChildScrollView(
-      child: SizedBox(
-        height: MediaQuery.of(context).size.height,
+    builder: (context) => SizedBox(
+      height: MediaQuery.of(context).size.height,
+      child: SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.center,
