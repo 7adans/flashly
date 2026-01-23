@@ -34,6 +34,8 @@ Future<T?> showAlert<T>(
   Color? infoIconColor,
   double? radius,
   double? actionButtonRadius,
+  VoidCallback? onTapRichTitle,
+  Color? richTitleColor,
 }) async {
   if (!asLoader) {
     if (enableHaptics) haptics();
@@ -56,6 +58,8 @@ Future<T?> showAlert<T>(
     context: context,
     radius: radius,
     actionButtonRadius: actionButtonRadius,
+    onTapRichTitle: onTapRichTitle,
+    richTitleColor: richTitleColor,
   );
 }
 
