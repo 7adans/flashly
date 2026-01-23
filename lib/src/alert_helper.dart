@@ -243,6 +243,7 @@ Future<T?> _showDialog<T>(
     context: context ?? Flashly.context,
     barrierDismissible: false,
     barrierColor: Colors.black45,
+    useRootNavigator: context == null,
     builder: (context) {
       final size = MediaQuery.of(context).size;
 
