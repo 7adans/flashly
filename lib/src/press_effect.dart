@@ -27,11 +27,9 @@ class _PressEffectState extends State<PressEffect> {
       onTapUp: widget.onPressed == null ? null : (_) => setState(() => _pressed = false),
       onTapCancel: widget.onPressed == null ? null : () => setState(() => _pressed = false),
       onTap: widget.onPressed == null ? null : () {
+        HapticFeedback.vibrate(); 
         setState(() => _pressed = true);
-        HapticFeedback.heavyImpact(); 
-        Timer(Duration(milliseconds: 200), () {
-          setState(() => _pressed = false);
-        });
+        Timer(Duration(milliseconds: 200), () => setState(() => _pressed = false));
         widget.onPressed?.call();
       },
       child: AnimatedOpacity(
