@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class PressEffect extends StatefulWidget {
   const PressEffect({
@@ -27,6 +28,7 @@ class _PressEffectState extends State<PressEffect> {
       onTapCancel: widget.onPressed == null ? null : () => setState(() => _pressed = false),
       onTap: widget.onPressed == null ? null : () {
         setState(() => _pressed = true);
+        HapticFeedback.heavyImpact(); 
         Timer(Duration(milliseconds: 200), () {
           setState(() => _pressed = false);
         });
