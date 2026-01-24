@@ -125,7 +125,7 @@ class _AlertActionButtonState extends State<AlertActionButton> {
   }
 }
 
-extension on VoidCallback {
+extension HapticCallback on VoidCallback {
   void hapticCallback() {
     HapticFeedback.mediumImpact();
     this.call();
