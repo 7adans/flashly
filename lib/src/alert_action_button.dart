@@ -5,6 +5,7 @@ import 'package:flashly/src/press_effect.dart';
 import 'package:flashly/src/txt.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class AlertActionButton extends StatefulWidget {
   const AlertActionButton({
@@ -52,7 +53,7 @@ class _AlertActionButtonState extends State<AlertActionButton> {
     } 
 
     return PressEffect(
-      onPressed: widget.onPressed,
+      onPressed: widget.onPressed?.hapticCallback,
       child: Container(
         height: 48,
         decoration: BoxDecoration(
@@ -99,7 +100,7 @@ class _AlertActionButtonState extends State<AlertActionButton> {
           padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
           borderRadius: _borderRadius,
           color: Colors.transparent,
-          onPressed: widget.onPressed,
+          onPressed: widget.onPressed?.hapticCallback,
           child: child, 
         ),
       );
@@ -108,7 +109,7 @@ class _AlertActionButtonState extends State<AlertActionButton> {
     return _buildButtonDecoration(
       context,
       child: ElevatedButton(
-        onPressed: widget.onPressed,
+        onPressed: widget.onPressed?.hapticCallback,
         style: ElevatedButton.styleFrom(
           elevation: 0,
           shadowColor: Colors.transparent,
@@ -121,5 +122,12 @@ class _AlertActionButtonState extends State<AlertActionButton> {
         child: child,
       ),
     );
+  }
+}
+
+extension on VoidCallback {
+  void hapticCallback() {
+    HapticFeedback.mediumImpact();
+    this.call();
   }
 }
