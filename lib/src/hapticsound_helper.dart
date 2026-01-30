@@ -4,7 +4,7 @@ import 'package:flutter/services.dart';
 enum HapticImpact {medium, vibrate, light, heavy}
 
 void haptics({
-  HapticImpact impact = HapticImpact.heavy,
+  HapticImpact impact = HapticImpact.medium,
 }) {
   if (impact == HapticImpact.heavy) {
     HapticFeedback.heavyImpact();

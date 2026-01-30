@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flashly/flashly.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -27,7 +28,7 @@ class _PressEffectState extends State<PressEffect> {
       onTapUp: widget.onPressed == null ? null : (_) => setState(() => _pressed = false),
       onTapCancel: widget.onPressed == null ? null : () => setState(() => _pressed = false),
       onTap: widget.onPressed == null ? null : () {
-        HapticFeedback.vibrate(); 
+        haptics(); 
         setState(() => _pressed = true);
         Timer(Duration(milliseconds: 200), () => setState(() => _pressed = false));
         widget.onPressed?.call();
