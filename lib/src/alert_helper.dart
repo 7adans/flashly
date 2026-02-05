@@ -2,14 +2,9 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:ui';
 
-import 'package:flashly/src/alert_action_button.dart';
-import 'package:flashly/src/hapticsound_helper.dart';
-import 'package:flashly/src/txt.dart';
-import 'package:flashly/src/utils.dart';
 import 'package:flutter/material.dart';
-import 'package:lottie/lottie.dart';
 
-import 'rich_txt.dart';
+import '../flashly.dart';
 
 enum AlertState { error, warning, info, success }
 
@@ -17,6 +12,7 @@ Future<T?> showAlert<T>(
   String title, {
   String? richTitle,
   String? description,
+  String? richDescription,
   String? negativeTitle,
   String? positiveTitle,
   BuildContext? context,
@@ -35,7 +31,9 @@ Future<T?> showAlert<T>(
   double? radius,
   double? actionButtonRadius,
   VoidCallback? onTapRichTitle,
+  VoidCallback? onTapRichDescription,
   Color? richTitleColor,
+  FontStyle? richDescriptionFontStyle,
 }) async {
   if (!asLoader) {
     if (enableHaptics) haptics();
@@ -46,6 +44,7 @@ Future<T?> showAlert<T>(
     title,
     description: description,
     richTitle: richTitle,
+    richDescription: richDescription,
     negativeTitle: negativeTitle,
     positiveTitle: positiveTitle,
     isDestructive: isDestructive,
@@ -59,13 +58,16 @@ Future<T?> showAlert<T>(
     radius: radius,
     actionButtonRadius: actionButtonRadius,
     onTapRichTitle: onTapRichTitle,
+    onTapRichDescription: onTapRichDescription,
     richTitleColor: richTitleColor,
+    richDescriptionFontStyle: richDescriptionFontStyle,
   );
 }
 
 Future<T?> _showDialog<T>(
   String title, {
   String? richTitle,
+  String? richDescription,
   String? description,
   String? negativeTitle,
   String? positiveTitle,
@@ -76,6 +78,8 @@ Future<T?> _showDialog<T>(
   int? closeLoaderAfterSecs,
   Future<void> Function()? onPositive,
   VoidCallback? onTapRichTitle,
+  VoidCallback? onTapRichDescription,
+  FontStyle? richDescriptionFontStyle,
   Color? richTitleColor,
   AlertState? state,
   Color? infoIconColor,
@@ -96,17 +100,6 @@ Future<T?> _showDialog<T>(
         Navigator.pop(context ?? Flashly.context);
         if (onNegative != null) onNegative();
       },
-    );
-  }
-
-  Widget buildAnimation(String icon, [double? size]) {
-    return Lottie.asset(
-      icon,
-      width: size ?? 70,
-      height: size ?? 70,
-      fit: BoxFit.cover,
-      repeat: true,
-      package: 'flashly',
     );
   }
 
@@ -183,16 +176,31 @@ Future<T?> _showDialog<T>(
                           overflow: TextOverflow.ellipsis,
                         ),
                     ],
-                    if (description != null)
-                      Txt(
-                        description, 
-                        color: Theme.of(ctx).colorScheme.onSurface, 
-                        fontSize: 15, 
-                        maxLines: 7,
-                        textAlign: TextAlign.center,
-                        fontWeight: FontWeight.w500,
-                        overflow: TextOverflow.ellipsis,
-                      ),
+                    if (description != null) ...[
+                      if (richDescription != null)
+                        RichTxt(
+                          text1: description, 
+                          text2: richDescription,
+                          onTap2: onTapRichDescription,
+                          color2: richTitleColor ?? Theme.of(ctx).colorScheme.onSurface,
+                          textAlign: .center,
+                          textOverflow1: .ellipsis,
+                          textOverflow2: .ellipsis,
+                          fontStyle2: richDescriptionFontStyle,
+                          fontSize: 15, 
+                          fontWeight: .w500,
+                        )
+                      else
+                        Txt(
+                          description, 
+                          color: Theme.of(ctx).colorScheme.onSurface, 
+                          fontSize: 15, 
+                          maxLines: 7,
+                          textAlign: TextAlign.center,
+                          fontWeight: FontWeight.w500,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                    ]
                   ],
                 ),
               ),

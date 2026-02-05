@@ -26,6 +26,8 @@ class RichTxt extends StatelessWidget {
     this.onTap2, 
     this.textOverflow1, 
     this.textOverflow2,
+    this.fontStyle1, 
+    this.fontStyle2,
   });
 
     final FontWeight? fontWeight;
@@ -50,10 +52,13 @@ class RichTxt extends StatelessWidget {
     final VoidCallback? onTap2;
     final TextOverflow? textOverflow1;
     final TextOverflow? textOverflow2;
+    final FontStyle? fontStyle1;
+    final FontStyle? fontStyle2;
 
   @override
   Widget build(BuildContext context) {
     return Text.rich(
+      textAlign: textAlign,
       TextSpan(
         children: [
           TextSpan(
@@ -67,6 +72,7 @@ class RichTxt extends StatelessWidget {
               fontFamily: fontFamily1 ?? fontFamily,
               decoration: decoration ?? decoration1,
               decorationColor: color ?? color1 ?? Theme.of(context).colorScheme.onSurface,
+              fontStyle: fontStyle1,
             ),
           ),
           TextSpan(
@@ -80,11 +86,11 @@ class RichTxt extends StatelessWidget {
               fontFamily: fontFamily2 ?? fontFamily,
               decoration: decoration ?? decoration2,
               decorationColor: color ?? color2 ?? Theme.of(context).colorScheme.onSurface,
+              fontStyle: fontStyle2,
             ),
           ),
         ],
       ),
-      textAlign: textAlign,
     );
   }
 }

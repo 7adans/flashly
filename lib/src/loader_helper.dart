@@ -3,8 +3,20 @@ import 'dart:io';
 
 import 'package:flashly/src/utils.dart';
 import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
 
 import 'alert_helper.dart';
+
+Widget buildAnimation(String icon, [double? size]) {
+  return Lottie.asset(
+    icon,
+    width: size ?? 70,
+    height: size ?? 70,
+    fit: BoxFit.cover,
+    repeat: true,
+    package: 'flashly',
+  );
+}
 
 Widget loader({
   double? size = 24, 
@@ -12,13 +24,14 @@ Widget loader({
   Key? key, 
   double? scaleFactor,
   double? androidStrokeWidth,
+  bool asNative = true,
 }) {
   final indicator = Transform.scale(
     scale: scaleFactor ?? (Platform.isIOS ? 1.2 : 1),
-    child: CircularProgressIndicator.adaptive(
+    child: asNative ? CircularProgressIndicator.adaptive(
       valueColor: AlwaysStoppedAnimation(color),
       strokeWidth: androidStrokeWidth ?? 2,
-    ),
+    ) : buildAnimation('assets/animations/loading.json', 50),
   );
 
   return Center(
