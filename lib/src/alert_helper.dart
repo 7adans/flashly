@@ -33,6 +33,7 @@ Future<T?> showAlert<T>(
   VoidCallback? onTapRichTitle,
   VoidCallback? onTapRichDescription,
   Color? richTitleColor,
+  Color? richDescriptionColor,
   FontStyle? richDescriptionFontStyle,
 }) async {
   if (!asLoader) {
@@ -60,6 +61,7 @@ Future<T?> showAlert<T>(
     onTapRichTitle: onTapRichTitle,
     onTapRichDescription: onTapRichDescription,
     richTitleColor: richTitleColor,
+    richDescriptionColor: richDescriptionColor,
     richDescriptionFontStyle: richDescriptionFontStyle,
   );
 }
@@ -81,6 +83,7 @@ Future<T?> _showDialog<T>(
   VoidCallback? onTapRichDescription,
   FontStyle? richDescriptionFontStyle,
   Color? richTitleColor,
+  Color? richDescriptionColor,
   AlertState? state,
   Color? infoIconColor,
   double? radius,
@@ -182,7 +185,7 @@ Future<T?> _showDialog<T>(
                           text1: description, 
                           text2: richDescription,
                           onTap2: onTapRichDescription,
-                          color2: richTitleColor ?? Theme.of(ctx).colorScheme.onSurface,
+                          color2: richDescriptionColor ?? Theme.of(ctx).colorScheme.onSurface,
                           textAlign: .center,
                           textOverflow1: .ellipsis,
                           textOverflow2: .ellipsis,
