@@ -138,7 +138,8 @@ class AnimatedToast extends StatefulWidget {
 
 class _AnimatedToastState extends State<AnimatedToast> with SingleTickerProviderStateMixin {
   late AnimationController _controller;
-  late Animation<double> _animation;
+  late Animation<double> _slideAnimation;
+  late Animation<double> _opacityAnimation;
   double _dragOffset = 0.0;
   Timer? _dismissTimer;
 
@@ -146,17 +147,21 @@ class _AnimatedToastState extends State<AnimatedToast> with SingleTickerProvider
   void initState() {
     super.initState();
     
-    // Tempo total curto para ser responsivo
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 350), 
+      duration: const Duration(milliseconds: 500), // Tempo para a mola respirar
     );
 
-    // Esta curva (cubic-bezier) é o segredo do iOS. 
-    // Ela começa muito rápido e desacelera suavemente no final, sem balançar (bounce) demais.
-    _animation = CurvedAnimation(
+    // Mola do iOS: sobe rápido, passa um pouco (1.07) e volta para o 1.0
+    _slideAnimation = CurvedAnimation(
       parent: _controller,
-      curve: const Cubic(0.2, 0.9, 0.4, 1.05), // Quase um spring, mas sem o "atraso"
+      curve: const Cubic(0.175, 0.885, 0.32, 1.07), 
+    );
+
+    // Fade de saída muito mais lento e natural
+    _opacityAnimation = CurvedAnimation(
+      parent: _controller,
+      curve: const Interval(0.0, 0.8, curve: Curves.linear),
     );
 
     _controller.forward();
@@ -170,10 +175,10 @@ class _AnimatedToastState extends State<AnimatedToast> with SingleTickerProvider
   void _reverseAndDismiss() async {
     if (mounted) {
       _dismissTimer?.cancel();
-      // Saída rápida e linear para baixo
+      // Saída: desaceleração suave ao cair (Curves.easeInBack tira o fade abrupto)
       await _controller.animateTo(0, 
-        curve: Curves.easeInCubic, 
-        duration: const Duration(milliseconds: 250)
+        curve: Curves.easeInOutCubic, 
+        duration: const Duration(milliseconds: 450) // Saída mais lenta como pedido
       );
       widget.onDismissed();
     }
@@ -192,19 +197,18 @@ class _AnimatedToastState extends State<AnimatedToast> with SingleTickerProvider
 
     return Positioned(
       bottom: bottomPadding,
-      left: 10,
-      right: 10,
+      left: 12,
+      right: 12,
       child: AnimatedBuilder(
-        animation: _animation,
+        animation: _controller,
         builder: (context, child) {
-          // Começa apenas 60px abaixo para ser ultra rápido
-          final double slideTranslation = (1 - _animation.value) * 60;
+          // 80px de curso para a mola ser visível
+          final double slideTranslation = (1 - _slideAnimation.value) * 80;
           
           return Transform.translate(
             offset: Offset(0, slideTranslation + _dragOffset),
             child: Opacity(
-              // Fade in rápido junto com o slide
-              opacity: _controller.value.clamp(0.0, 1.0),
+              opacity: _opacityAnimation.value,
               child: child,
             ),
           );
@@ -214,55 +218,51 @@ class _AnimatedToastState extends State<AnimatedToast> with SingleTickerProvider
             _dismissTimer?.cancel();
             setState(() {
               _dragOffset += details.delta.dy;
-              if (_dragOffset < 0) _dragOffset = 0; // Trava o arraste para cima
+              if (_dragOffset < 0) _dragOffset = 0; 
             });
           },
           onVerticalDragEnd: (details) {
             if (_dragOffset > 40 || details.primaryVelocity! > 100) {
               _reverseAndDismiss();
             } else {
-              // Volta com "mola" manual via AnimatedContainer ou setState direto
+              // Volta suave se o usuário soltar
               setState(() => _dragOffset = 0);
               _startTimer();
             }
           },
-          child: AnimatedContainer(
-            duration: const Duration(milliseconds: 200),
-            curve: Curves.easeOutCubic,
-            transform: Matrix4.translationValues(0, 0, 0), // Auxilia na suavidade do render
-            child: Material(
-              color: Colors.transparent,
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                decoration: BoxDecoration(
-                  color: const Color(0xFF2C2C2E), // iOS Dark Grey
-                  borderRadius: BorderRadius.circular(12),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.3),
-                      blurRadius: 15,
-                      offset: const Offset(0, 8),
-                    )
-                  ],
-                ),
-                child: Row(
-                  children: [
-                    const Icon(Icons.check_circle, color: Colors.white, size: 20),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Text(
-                        widget.message,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 15,
-                          fontWeight: FontWeight.w500,
-                          decoration: TextDecoration.none,
-                          letterSpacing: -0.2,
-                        ),
+          // Container com design fiel ao iOS 17/18
+          child: Material(
+            color: Colors.transparent,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+              decoration: BoxDecoration(
+                color: const Color(0xFF2C2C2E).withOpacity(0.96),
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.3),
+                    blurRadius: 20,
+                    offset: const Offset(0, 10),
+                  )
+                ],
+              ),
+              child: Row(
+                children: [
+                  const Icon(Icons.check_circle, color: Colors.white, size: 22),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      widget.message,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                        decoration: TextDecoration.none,
+                        letterSpacing: -0.4,
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
           ),
