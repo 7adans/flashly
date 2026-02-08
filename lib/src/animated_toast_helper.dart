@@ -110,7 +110,7 @@
 
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:flutter/physics.dart'; // Importante para a física de mola
+import 'package:flutter/physics.dart';
 
 void showAnimatedToast(BuildContext context, String message) {
   final overlay = Navigator.of(context, rootNavigator: true).overlay;
@@ -145,18 +145,19 @@ class _AnimatedToastState extends State<AnimatedToast> with SingleTickerProvider
   @override
   void initState() {
     super.initState();
+    // Reduzimos o tempo total para a animação não parecer "arrastada"
     _controller = AnimationController(
       vsync: this,
-      upperBound: 1.0,
-      duration: const Duration(milliseconds: 600), // Duração base
+      duration: const Duration(milliseconds: 450), 
     );
 
-    // Definindo a física da mola do iOS (Spring)
-    // damping: 0.7 (suavidade), stiffness: 120 (rigidez)
+    // AJUSTE DA MOLA: 
+    // Stiffness maior (180) = resposta mais rápida.
+    // Damping (15) = para de balançar mais rápido, sem o delay que você notou.
     final spring = SpringDescription(
-      mass: 1.0,
-      stiffness: 120.0,
-      damping: 12.0,
+      mass: 0.8, // Menor massa para ser mais ágil
+      stiffness: 180.0, 
+      damping: 15.0,
     );
 
     final simulation = SpringSimulation(spring, 0, 1, 0);
@@ -172,8 +173,8 @@ class _AnimatedToastState extends State<AnimatedToast> with SingleTickerProvider
   void _reverseAndDismiss() async {
     if (mounted) {
       _dismissTimer?.cancel();
-      // Na saída, o iOS costuma ser um pouco mais rápido e linear
-      await _controller.animateTo(0, curve: Curves.easeInQuad, duration: const Duration(milliseconds: 300));
+      // Saída mais direta, estilo iOS
+      await _controller.animateTo(0, curve: Curves.easeInQuart, duration: const Duration(milliseconds: 250));
       widget.onDismissed();
     }
   }
@@ -196,16 +197,12 @@ class _AnimatedToastState extends State<AnimatedToast> with SingleTickerProvider
       child: AnimatedBuilder(
         animation: _controller,
         builder: (context, child) {
-          // Calculamos o slide baseado no valor da mola (0 a 1)
-          // Quando 0, está 150px abaixo. Quando 1, está na posição final (0).
-          final double slideTranslation = (1 - _controller.value) * 150;
+          // O slide agora é mais curto (100px) para não demorar a chegar no destino
+          final double slideTranslation = (1 - _controller.value) * 100;
           
           return Transform.translate(
             offset: Offset(0, slideTranslation + _dragOffset),
-            child: Opacity(
-              opacity: _controller.value.clamp(0.0, 1.0),
-              child: child,
-            ),
+            child: child,
           );
         },
         child: GestureDetector(
@@ -213,13 +210,14 @@ class _AnimatedToastState extends State<AnimatedToast> with SingleTickerProvider
           onVerticalDragUpdate: (details) {
             setState(() {
               _dragOffset += details.delta.dy;
-              if (_dragOffset < 0) _dragOffset = _dragOffset * 0.2; // Resistência ao puxar para cima
+              if (_dragOffset < 0) _dragOffset = _dragOffset * 0.2; 
             });
           },
           onVerticalDragEnd: (details) {
-            if (_dragOffset > 50 || details.primaryVelocity! > 200) {
+            if (_dragOffset > 40 || details.primaryVelocity! > 150) {
               _reverseAndDismiss();
             } else {
+              // Volta imediata se não atingir o limite de descarte
               setState(() => _dragOffset = 0);
               _startTimer();
             }
@@ -229,13 +227,13 @@ class _AnimatedToastState extends State<AnimatedToast> with SingleTickerProvider
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
               decoration: BoxDecoration(
-                color: const Color(0xFF2C2C2E).withOpacity(0.95), // Cor exata do Dark Mode iOS
+                color: const Color(0xFF2C2C2E).withOpacity(0.98),
                 borderRadius: BorderRadius.circular(14),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.25),
-                    blurRadius: 20,
-                    offset: const Offset(0, 8),
+                    color: Colors.black.withOpacity(0.3),
+                    blurRadius: 25,
+                    offset: const Offset(0, 10),
                   )
                 ],
               ),
@@ -249,7 +247,7 @@ class _AnimatedToastState extends State<AnimatedToast> with SingleTickerProvider
                       style: const TextStyle(
                         color: Colors.white,
                         fontSize: 16,
-                        letterSpacing: -0.3, // Kerning do iOS
+                        letterSpacing: -0.4,
                         fontWeight: FontWeight.w400,
                         decoration: TextDecoration.none,
                       ),
