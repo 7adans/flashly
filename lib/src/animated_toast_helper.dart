@@ -73,7 +73,7 @@ class _AnimatedToastState extends State<AnimatedToast>
   @override
   Widget build(BuildContext context) {
     // Pegamos a altura da bottom bar para posicionar acima dela
-    final bottomPadding = MediaQuery.of(context).padding.bottom + kBottomNavigationBarHeight + 10;
+    final bottomPadding = kBottomNavigationBarHeight;
 
     return Positioned(
       bottom: bottomPadding,
@@ -84,9 +84,9 @@ class _AnimatedToastState extends State<AnimatedToast>
         child: Material(
           color: Colors.transparent,
           child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
             decoration: BoxDecoration(
-              color: const Color(0xFF333333).withOpacity(0.95),
+              color: const Color(0xFF333333).withValues(alpha: 0.95),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Row(
