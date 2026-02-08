@@ -15,10 +15,16 @@ void showAnimatedToast(
   final overlay = Flashly.navigatorKey.currentState?.overlay;
   if (overlay == null) return;
 
+  if (enableHaptics) haptics();
+  if (enableSound) playSound(state == ToastState.error);
+
   late OverlayEntry overlayEntry;
   overlayEntry = OverlayEntry(
     builder: (context) => AnimatedToast(
       message: message,
+      icon: icon,
+      iconColor: iconColor,
+      state: state,
       onDismissed: () => overlayEntry.remove(),
     ),
   );
