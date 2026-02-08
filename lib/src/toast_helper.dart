@@ -138,7 +138,7 @@ class _AnimatedToastState extends State<AnimatedToast> with SingleTickerProvider
             offset: Offset(0, slideTranslation + _dragOffset),
             child: Opacity(
               opacity: _opacityAnimation.value, 
-              child: child,
+              child: Center(child: child),
             ),
           );
         },
@@ -163,7 +163,11 @@ class _AnimatedToastState extends State<AnimatedToast> with SingleTickerProvider
             color: Colors.transparent,
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-              constraints: BoxConstraints(maxWidth: 330, maxHeight: 250),
+              constraints: BoxConstraints(
+                minWidth: 100,
+                maxWidth: 330,
+                maxHeight: 250,
+              ),
               decoration: BoxDecoration(
                 color: const Color(0xFF2C2C2E).withValues(alpha: 0.96),
                 borderRadius: BorderRadius.circular(16),
