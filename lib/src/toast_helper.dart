@@ -1,9 +1,6 @@
-import 'dart:io';
-import 'dart:ui';
+import 'dart:async';
 
-import 'package:flashly/src/colors.dart';
 import 'package:flashly/src/hapticsound_helper.dart';
-import 'package:flashly/src/txt.dart';
 import 'package:flashly/src/utils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -15,83 +12,192 @@ void showToast(
   IconData? icon,
   Color? iconColor,
   ToastState? state = ToastState.success,
+  double? fontSize,
   bool enableHaptics = false,
   bool enableSound = false,
 }) {
+  final overlay = Flashly.navigatorKey.currentState?.overlay;
+  if (overlay == null) return;
+
   if (enableHaptics) haptics();
   if (enableSound) playSound(state == ToastState.error);
-  _showSnackBar(message, state, icon, iconColor);
+
+  late OverlayEntry overlayEntry;
+  overlayEntry = OverlayEntry(
+    builder: (context) => AnimatedToast(
+      message: message,
+      icon: icon,
+      iconColor: iconColor,
+      state: state,
+      fontSize: fontSize,
+      onDismissed: () => overlayEntry.remove(),
+    ),
+  );
+
+  overlay.insert(overlayEntry);
 }
 
-ScaffoldFeatureController<SnackBar, SnackBarClosedReason> _showSnackBar(
-  String text, [
-    ToastState? state,
-    IconData? icon,
-    Color? iconColor,
-  ]
-) {
-  final content = Container(
-    padding: EdgeInsets.fromLTRB(18, 14, 20, 14),
-    constraints: BoxConstraints(maxWidth: 300, maxHeight: 220),
-    decoration: BoxDecoration(
-      color: gray.withValues(alpha: Platform.isIOS ? .9 : 1),
-      borderRadius: BorderRadius.circular(30),
-    ),
-    child: Row(
-      spacing: 11,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Icon(
-          icon ??
-          (state == ToastState.error 
-            ? CupertinoIcons.exclamationmark_circle
-            : state == ToastState.info 
-                ? CupertinoIcons.info_circle
-                : CupertinoIcons.check_mark_circled), 
-          color: iconColor ??
-            (state == ToastState.error 
-              ? Colors.red.shade300 
-              : state == ToastState.info ? Colors.amber.shade300 : Colors.green.shade300), 
-          size: 20,
-        ),
-        Flexible(
-          fit: FlexFit.loose,
-          child: Txt(
-            text,
-            maxLines: 4,
-            color: Colors.white, 
-            fontSize: 13,
-            fontWeight: FontWeight.w600,
-            overflow: TextOverflow.ellipsis,
+class AnimatedToast extends StatefulWidget {
+  final String message;
+  final IconData? icon;
+  final Color? iconColor;
+  final ToastState? state;
+  final double? fontSize;
+  final VoidCallback onDismissed;
+
+  const AnimatedToast({
+    super.key, 
+    required this.message, 
+    required this.onDismissed,
+    this.icon,
+    this.iconColor,
+    this.fontSize,
+    this.state = ToastState.success,
+  });
+
+  @override
+  State<AnimatedToast> createState() => _AnimatedToastState();
+}
+
+class _AnimatedToastState extends State<AnimatedToast> with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _slideAnimation;
+  late Animation<double> _opacityAnimation;
+  double _dragOffset = 0.0;
+  Timer? _dismissTimer;
+
+  @override
+  void initState() {
+    super.initState();
+    
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 500),
+    );
+
+    _slideAnimation = CurvedAnimation(
+      parent: _controller,
+      curve: const Cubic(0.175, 0.885, 0.32, 1.07), 
+    );
+
+    _opacityAnimation = CurvedAnimation(
+      parent: _controller,
+      curve: const Interval(0, .4, curve: Curves.linear),
+    );
+
+    _controller.forward();
+    _startTimer();
+  }
+
+  void _startTimer() {
+    _dismissTimer = Timer(const Duration(seconds: 3), _reverseAndDismiss);
+  }
+
+  void _reverseAndDismiss() async {
+    if (mounted) {
+      _dismissTimer?.cancel();
+      await _controller.animateTo(0, 
+        curve: Curves.easeInOutCubic, 
+        duration: const Duration(milliseconds: 450)
+      );
+      widget.onDismissed();
+    }
+  }
+
+  @override
+  void dispose() {
+    _dismissTimer?.cancel();
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final bottomPadding = MediaQuery.of(context).padding.bottom + kBottomNavigationBarHeight + 10;
+
+    return Positioned(
+      bottom: bottomPadding,
+      left: 12,
+      right: 12,
+      child: AnimatedBuilder(
+        animation: _controller,
+        builder: (context, child) {
+          final double slideTranslation = (1 - _slideAnimation.value) * 160;
+          
+          return Transform.translate(
+            offset: Offset(0, slideTranslation + _dragOffset),
+            child: Opacity(
+              opacity: _opacityAnimation.value, 
+              child: child,
+            ),
+          );
+        },
+        child: GestureDetector(
+          onVerticalDragUpdate: (details) {
+            _dismissTimer?.cancel();
+            setState(() {
+              _dragOffset += details.delta.dy;
+              if (_dragOffset < 0) _dragOffset = 0; 
+            });
+          },
+          onVerticalDragEnd: (details) {
+            if (_dragOffset > 40 || details.primaryVelocity! > 100) {
+              _reverseAndDismiss();
+            } else {
+              setState(() => _dragOffset = 0);
+              _startTimer();
+            }
+          },
+          // iOS feel Container design 17/18
+          child: Material(
+            color: Colors.transparent,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+              decoration: BoxDecoration(
+                color: const Color(0xFF2C2C2E).withValues(alpha: 0.96),
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.3),
+                    blurRadius: 20,
+                    offset: const Offset(0, 10),
+                  ),
+                ],
+              ),
+              child: Row(
+                spacing: 12,
+                children: [
+                  Icon(
+                    widget.icon ??
+                    (widget.state == ToastState.error 
+                      ? CupertinoIcons.exclamationmark_circle
+                      : widget.state == ToastState.info 
+                          ? CupertinoIcons.info_circle
+                          : CupertinoIcons.check_mark_circled), 
+                    color: widget.iconColor ??
+                      (widget.state == ToastState.error 
+                        ? Colors.red.shade300 
+                        : widget.state == ToastState.info ? Colors.amber.shade300 : Colors.green.shade300), 
+                    size: 22,
+                  ),
+                  Expanded(
+                    child: Text(
+                      widget.message,
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: widget.fontSize ?? 15,
+                        fontWeight: FontWeight.w500,
+                        decoration: TextDecoration.none,
+                        letterSpacing: -0.4,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ),
         ),
-      ],
-    ),
-  );
-
-  return Flashly.scaffoldMessengerKey.currentState!.showSnackBar(
-    SnackBar(
-      elevation: 0,
-      backgroundColor: Colors.transparent,
-      behavior: Platform.isIOS 
-        ? SnackBarBehavior.fixed 
-        : SnackBarBehavior.floating,
-      content: Center(
-        child: Card(
-          elevation: Platform.isIOS ? 20 : 0,
-          color: Colors.transparent,
-          shape: RoundedSuperellipseBorder(borderRadius: BorderRadius.circular(30)),
-          shadowColor: Colors.black38,
-          margin: EdgeInsets.zero,
-          child: Platform.isIOS ? ClipRRect(
-            borderRadius: BorderRadius.circular(30),
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
-              child: content,
-            ),
-          ) : content,
-        ),
       ),
-    ),
-  );
+    );
+  }
 }
