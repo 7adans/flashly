@@ -1,17 +1,19 @@
 import 'package:flutter/material.dart';
 
 void showAnimatedToast(BuildContext context, String message) {
-  OverlayState? overlayState = Overlay.of(context);
+  final overlay = Navigator.of(context, rootNavigator: true).overlay;
+  if (overlay == null) return;
+
   late OverlayEntry overlayEntry;
 
   overlayEntry = OverlayEntry(
     builder: (context) => AnimatedToast(
       message: message,
-      onDismissed: overlayEntry.remove,
+      onDismissed: () => overlayEntry.remove(),
     ),
   );
 
-  overlayState.insert(overlayEntry);
+  overlay.insert(overlayEntry);
 }
 
 class AnimatedToast extends StatefulWidget {
