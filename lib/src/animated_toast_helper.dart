@@ -212,7 +212,7 @@ class _AnimatedToastState extends State<AnimatedToast> with SingleTickerProvider
         },
         child: AnimatedContainer(
           duration: _dragOffset == 0 ? const Duration(milliseconds: 200) : Duration.zero,
-          curve: Curves.easeOut,
+          curve: Curves.easeInOutBack,
           transform: Matrix4.translationValues(0, _dragOffset, 0), // O segredo da suavidade
           child: SlideTransition(
             position: _entryAnimation,
