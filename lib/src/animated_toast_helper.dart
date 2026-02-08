@@ -145,7 +145,7 @@ class _AnimatedToastState extends State<AnimatedToast>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<Offset> _offsetAnimation;
-  Timer? _dismissTimer; // Timer para controlar o auto-dismiss
+  Timer? _dismissTimer;
 
   @override
   void initState() {
@@ -156,8 +156,8 @@ class _AnimatedToastState extends State<AnimatedToast>
     );
 
     _offsetAnimation = Tween<Offset>(
-      begin: const Offset(0, 1.5), // Começa totalmente fora da tela
-      end: const Offset(0, 0),    // Termina no local do Positioned
+      begin: const Offset(0, 1.5),
+      end: const Offset(0, 0),
     ).animate(CurvedAnimation(
       parent: _controller,
       curve: Curves.easeOutBack,
@@ -167,20 +167,18 @@ class _AnimatedToastState extends State<AnimatedToast>
     _startTimer();
   }
 
-  // Inicia o contador para fechar sozinho
   void _startTimer() {
     _dismissTimer = Timer(const Duration(seconds: 3), () {
-      _reverseAndDismiss();
+      if (mounted) _reverseAndDismiss();
     });
   }
 
-  // Cancela o contador se o usuário estiver interagindo
   void _cancelTimer() {
     _dismissTimer?.cancel();
   }
 
   void _reverseAndDismiss() async {
-    if (mounted && _controller.isCompleted) {
+    if (mounted) {
       await _controller.reverse();
       widget.onDismissed();
     }
@@ -195,24 +193,37 @@ class _AnimatedToastState extends State<AnimatedToast>
 
   @override
   Widget build(BuildContext context) {
-    // Definimos o posicionamento base (em cima da barra ou no fundo da tela)
-    final bottomPadding = MediaQuery.of(context).padding.bottom + 20;
+    // Definimos o ponto onde ele para (acima da barra de navegação)
+    final bottomPadding = MediaQuery.of(context).padding.bottom + kBottomNavigationBarHeight + 10;
 
     return Positioned(
       bottom: bottomPadding,
       left: 10,
       right: 10,
       child: GestureDetector(
-        // Detecta o início do arraste: para o timer
+        // Para o timer ao tocar
         onVerticalDragStart: (_) => _cancelTimer(),
-        // Detecta o movimento: se arrastar para baixo significativamente, fecha
+        
+        // Faz o snackbar seguir o dedo (apenas para baixo)
         onVerticalDragUpdate: (details) {
-          if (details.primaryDelta! > 10) { 
-            _reverseAndDismiss();
+          // Calculamos o progresso baseado no movimento (ajuste o 100 para sensibilidade)
+          double delta = details.primaryDelta! / 100;
+          if (delta > 0) {
+            _controller.value -= delta;
           }
         },
-        // Se soltar e não tiver fechado, reinicia o timer (opcional)
-        onVerticalDragEnd: (_) => _startTimer(),
+        
+        // Ao soltar, decide se fecha ou volta
+        onVerticalDragEnd: (details) {
+          if (_controller.value < 0.6 || details.primaryVelocity! > 100) {
+            // Se arrastou muito para baixo ou foi rápido, fecha
+            _reverseAndDismiss();
+          } else {
+            // Se arrastou pouco, volta para a posição original (mola)
+            _controller.forward();
+            _startTimer(); // Reinicia o tempo para sumir
+          }
+        },
         child: SlideTransition(
           position: _offsetAnimation,
           child: Material(
@@ -225,8 +236,8 @@ class _AnimatedToastState extends State<AnimatedToast>
                 boxShadow: [
                   BoxShadow(
                     color: Colors.black.withValues(alpha: 0.2),
-                    blurRadius: 8,
-                    offset: const Offset(0, 2),
+                    blurRadius: 10,
+                    offset: const Offset(0, 4),
                   )
                 ],
               ),
@@ -240,7 +251,7 @@ class _AnimatedToastState extends State<AnimatedToast>
                       style: const TextStyle(
                         color: Colors.white, 
                         fontSize: 15,
-                        decoration: TextDecoration.none,
+                        decoration: TextDecoration.none, // Essencial para Overlay
                       ),
                     ),
                   ),
