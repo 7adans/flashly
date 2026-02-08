@@ -207,10 +207,7 @@ class _AnimatedToastState extends State<AnimatedToast> with SingleTickerProvider
           
           return Transform.translate(
             offset: Offset(0, slideTranslation + _dragOffset),
-            child: Opacity(
-              opacity: _opacityAnimation.value,
-              child: child,
-            ),
+            child: child,
           );
         },
         child: GestureDetector(
