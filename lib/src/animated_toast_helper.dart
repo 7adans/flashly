@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 void showAnimatedToast(BuildContext context, String message) {
@@ -51,7 +52,7 @@ class _AnimatedToastState extends State<AnimatedToast> with SingleTickerProvider
     // Fade de saída muito mais lento e natural
     _opacityAnimation = CurvedAnimation(
       parent: _controller,
-      curve: const Interval(0.3, 1, curve: Curves.linear),
+      curve: const Interval(0, 1, curve: Curves.linear),
     );
 
     _controller.forward();
