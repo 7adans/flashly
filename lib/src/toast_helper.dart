@@ -73,10 +73,9 @@ ScaffoldFeatureController<SnackBar, SnackBarClosedReason> _showSnackBar(
     SnackBar(
       elevation: 0,
       backgroundColor: Colors.transparent,
-      behavior: SnackBarBehavior.floating,
-      margin: Platform.isAndroid 
-        ? EdgeInsets.zero 
-        : EdgeInsets.fromLTRB(0, 0, 0, kBottomNavigationBarHeight + 10),
+      behavior: Platform.isIOS 
+        ? SnackBarBehavior.fixed 
+        : SnackBarBehavior.floating,
       content: Center(
         child: Card(
           elevation: Platform.isIOS ? 20 : 0,
