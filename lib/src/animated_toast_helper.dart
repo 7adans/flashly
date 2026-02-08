@@ -110,6 +110,7 @@
 
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter/physics.dart'; // Importante para a física de mola
 
 void showAnimatedToast(BuildContext context, String message) {
   final overlay = Navigator.of(context, rootNavigator: true).overlay;
@@ -138,9 +139,7 @@ class AnimatedToast extends StatefulWidget {
 
 class _AnimatedToastState extends State<AnimatedToast> with SingleTickerProviderStateMixin {
   late AnimationController _controller;
-  late Animation<Offset> _entryAnimation;
-  
-  double _dragOffset = 0.0; // Controla o deslocamento do dedo
+  double _dragOffset = 0.0;
   Timer? _dismissTimer;
 
   @override
@@ -148,18 +147,21 @@ class _AnimatedToastState extends State<AnimatedToast> with SingleTickerProvider
     super.initState();
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 500),
+      upperBound: 1.0,
+      duration: const Duration(milliseconds: 600), // Duração base
     );
 
-    _entryAnimation = Tween<Offset>(
-      begin: const Offset(0, 2), // Começa bem abaixo
-      end: Offset.zero,
-    ).animate(CurvedAnimation(
-      parent: _controller,
-      curve: Curves.elasticOut, // Curva de mola nativa do iOS
-    ));
+    // Definindo a física da mola do iOS (Spring)
+    // damping: 0.7 (suavidade), stiffness: 120 (rigidez)
+    final spring = SpringDescription(
+      mass: 1.0,
+      stiffness: 120.0,
+      damping: 12.0,
+    );
 
-    _controller.forward();
+    final simulation = SpringSimulation(spring, 0, 1, 0);
+    _controller.animateWith(simulation);
+
     _startTimer();
   }
 
@@ -170,7 +172,8 @@ class _AnimatedToastState extends State<AnimatedToast> with SingleTickerProvider
   void _reverseAndDismiss() async {
     if (mounted) {
       _dismissTimer?.cancel();
-      await _controller.reverse();
+      // Na saída, o iOS costuma ser um pouco mais rápido e linear
+      await _controller.animateTo(0, curve: Curves.easeInQuad, duration: const Duration(milliseconds: 300));
       widget.onDismissed();
     }
   }
@@ -184,70 +187,75 @@ class _AnimatedToastState extends State<AnimatedToast> with SingleTickerProvider
 
   @override
   Widget build(BuildContext context) {
-    // Posicionamento acima da BottomBar
     final bottomPadding = MediaQuery.of(context).padding.bottom + kBottomNavigationBarHeight + 10;
 
     return Positioned(
       bottom: bottomPadding,
       left: 10,
       right: 10,
-      child: GestureDetector(
-        onVerticalDragStart: (_) => _dismissTimer?.cancel(),
-        onVerticalDragUpdate: (details) {
-          setState(() {
-            // Apenas permite arrastar para baixo (valores positivos)
-            _dragOffset += details.delta.dy;
-            if (_dragOffset < 0) _dragOffset = 0; 
-          });
+      child: AnimatedBuilder(
+        animation: _controller,
+        builder: (context, child) {
+          // Calculamos o slide baseado no valor da mola (0 a 1)
+          // Quando 0, está 150px abaixo. Quando 1, está na posição final (0).
+          final double slideTranslation = (1 - _controller.value) * 150;
+          
+          return Transform.translate(
+            offset: Offset(0, slideTranslation + _dragOffset),
+            child: Opacity(
+              opacity: _controller.value.clamp(0.0, 1.0),
+              child: child,
+            ),
+          );
         },
-        onVerticalDragEnd: (details) {
-          // Se arrastou mais de 40px ou soltou com velocidade para baixo
-          if (_dragOffset > 40 || details.primaryVelocity! > 100) {
-            _reverseAndDismiss();
-          } else {
-            // Volta para a posição original suavemente
-            setState(() => _dragOffset = 0);
-            _startTimer();
-          }
-        },
-        child: AnimatedContainer(
-          duration: _dragOffset == 0 ? const Duration(milliseconds: 200) : Duration.zero,
-          curve: Curves.easeInOutBack,
-          transform: Matrix4.translationValues(0, _dragOffset, 0), // O segredo da suavidade
-          child: SlideTransition(
-            position: _entryAnimation,
-            child: Material(
-              color: Colors.transparent,
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
-                decoration: BoxDecoration(
-                  color: const Color(0xFF333333).withOpacity(0.95),
-                  borderRadius: BorderRadius.circular(15),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.3),
-                      blurRadius: 15,
-                      offset: const Offset(0, 5),
-                    )
-                  ],
-                ),
-                child: Row(
-                  children: [
-                    const Icon(Icons.check_circle, color: Colors.white, size: 22),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Text(
-                        widget.message,
-                        style: const TextStyle(
-                          color: Colors.white, 
-                          fontSize: 16,
-                          fontWeight: FontWeight.w400,
-                          decoration: TextDecoration.none,
-                        ),
+        child: GestureDetector(
+          onVerticalDragStart: (_) => _dismissTimer?.cancel(),
+          onVerticalDragUpdate: (details) {
+            setState(() {
+              _dragOffset += details.delta.dy;
+              if (_dragOffset < 0) _dragOffset = _dragOffset * 0.2; // Resistência ao puxar para cima
+            });
+          },
+          onVerticalDragEnd: (details) {
+            if (_dragOffset > 50 || details.primaryVelocity! > 200) {
+              _reverseAndDismiss();
+            } else {
+              setState(() => _dragOffset = 0);
+              _startTimer();
+            }
+          },
+          child: Material(
+            color: Colors.transparent,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+              decoration: BoxDecoration(
+                color: const Color(0xFF2C2C2E).withOpacity(0.95), // Cor exata do Dark Mode iOS
+                borderRadius: BorderRadius.circular(14),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.25),
+                    blurRadius: 20,
+                    offset: const Offset(0, 8),
+                  )
+                ],
+              ),
+              child: Row(
+                children: [
+                  const Icon(Icons.check_circle, color: Colors.white, size: 22),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      widget.message,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        letterSpacing: -0.3, // Kerning do iOS
+                        fontWeight: FontWeight.w400,
+                        decoration: TextDecoration.none,
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
           ),
