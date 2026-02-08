@@ -110,7 +110,6 @@
 
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:flutter/physics.dart';
 
 void showAnimatedToast(BuildContext context, String message) {
   final overlay = Navigator.of(context, rootNavigator: true).overlay;
@@ -139,30 +138,28 @@ class AnimatedToast extends StatefulWidget {
 
 class _AnimatedToastState extends State<AnimatedToast> with SingleTickerProviderStateMixin {
   late AnimationController _controller;
+  late Animation<double> _animation;
   double _dragOffset = 0.0;
   Timer? _dismissTimer;
 
   @override
   void initState() {
     super.initState();
-    // Reduzimos o tempo total para a animação não parecer "arrastada"
+    
+    // Tempo total curto para ser responsivo
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 450), 
+      duration: const Duration(milliseconds: 350), 
     );
 
-    // AJUSTE DA MOLA: 
-    // Stiffness maior (180) = resposta mais rápida.
-    // Damping (15) = para de balançar mais rápido, sem o delay que você notou.
-    final spring = SpringDescription(
-      mass: 0.8, // Menor massa para ser mais ágil
-      stiffness: 180.0, 
-      damping: 15.0,
+    // Esta curva (cubic-bezier) é o segredo do iOS. 
+    // Ela começa muito rápido e desacelera suavemente no final, sem balançar (bounce) demais.
+    _animation = CurvedAnimation(
+      parent: _controller,
+      curve: const Cubic(0.2, 0.9, 0.4, 1.05), // Quase um spring, mas sem o "atraso"
     );
 
-    final simulation = SpringSimulation(spring, 0, 1, 0);
-    _controller.animateWith(simulation);
-
+    _controller.forward();
     _startTimer();
   }
 
@@ -173,8 +170,11 @@ class _AnimatedToastState extends State<AnimatedToast> with SingleTickerProvider
   void _reverseAndDismiss() async {
     if (mounted) {
       _dismissTimer?.cancel();
-      // Saída mais direta, estilo iOS
-      await _controller.animateTo(0, curve: Curves.easeInQuart, duration: const Duration(milliseconds: 250));
+      // Saída rápida e linear para baixo
+      await _controller.animateTo(0, 
+        curve: Curves.easeInCubic, 
+        duration: const Duration(milliseconds: 250)
+      );
       widget.onDismissed();
     }
   }
@@ -195,65 +195,74 @@ class _AnimatedToastState extends State<AnimatedToast> with SingleTickerProvider
       left: 10,
       right: 10,
       child: AnimatedBuilder(
-        animation: _controller,
+        animation: _animation,
         builder: (context, child) {
-          // O slide agora é mais curto (100px) para não demorar a chegar no destino
-          final double slideTranslation = (1 - _controller.value) * 100;
+          // Começa apenas 60px abaixo para ser ultra rápido
+          final double slideTranslation = (1 - _animation.value) * 60;
           
           return Transform.translate(
             offset: Offset(0, slideTranslation + _dragOffset),
-            child: child,
+            child: Opacity(
+              // Fade in rápido junto com o slide
+              opacity: _controller.value.clamp(0.0, 1.0),
+              child: child,
+            ),
           );
         },
         child: GestureDetector(
-          onVerticalDragStart: (_) => _dismissTimer?.cancel(),
           onVerticalDragUpdate: (details) {
+            _dismissTimer?.cancel();
             setState(() {
               _dragOffset += details.delta.dy;
-              if (_dragOffset < 0) _dragOffset = _dragOffset * 0.2; 
+              if (_dragOffset < 0) _dragOffset = 0; // Trava o arraste para cima
             });
           },
           onVerticalDragEnd: (details) {
-            if (_dragOffset > 40 || details.primaryVelocity! > 150) {
+            if (_dragOffset > 40 || details.primaryVelocity! > 100) {
               _reverseAndDismiss();
             } else {
-              // Volta imediata se não atingir o limite de descarte
+              // Volta com "mola" manual via AnimatedContainer ou setState direto
               setState(() => _dragOffset = 0);
               _startTimer();
             }
           },
-          child: Material(
-            color: Colors.transparent,
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
-              decoration: BoxDecoration(
-                color: const Color(0xFF2C2C2E).withOpacity(0.98),
-                borderRadius: BorderRadius.circular(14),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.3),
-                    blurRadius: 25,
-                    offset: const Offset(0, 10),
-                  )
-                ],
-              ),
-              child: Row(
-                children: [
-                  const Icon(Icons.check_circle, color: Colors.white, size: 22),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Text(
-                      widget.message,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 16,
-                        letterSpacing: -0.4,
-                        fontWeight: FontWeight.w400,
-                        decoration: TextDecoration.none,
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 200),
+            curve: Curves.easeOutCubic,
+            transform: Matrix4.translationValues(0, 0, 0), // Auxilia na suavidade do render
+            child: Material(
+              color: Colors.transparent,
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF2C2C2E), // iOS Dark Grey
+                  borderRadius: BorderRadius.circular(12),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.3),
+                      blurRadius: 15,
+                      offset: const Offset(0, 8),
+                    )
+                  ],
+                ),
+                child: Row(
+                  children: [
+                    const Icon(Icons.check_circle, color: Colors.white, size: 20),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        widget.message,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 15,
+                          fontWeight: FontWeight.w500,
+                          decoration: TextDecoration.none,
+                          letterSpacing: -0.2,
+                        ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),
