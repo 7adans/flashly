@@ -5,7 +5,7 @@ import 'package:flashly/src/utils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-enum ToastState {error, info, success}
+enum ToastState { error, info, success }
 
 void showToast(
   String message, {
@@ -13,6 +13,7 @@ void showToast(
   Color? iconColor,
   ToastState? state = ToastState.success,
   double? fontSize,
+  Duration? duration,
   bool enableHaptics = false,
   bool enableSound = false,
 }) {
@@ -30,6 +31,7 @@ void showToast(
       iconColor: iconColor,
       state: state,
       fontSize: fontSize,
+      duration: duration,
       onDismissed: () => overlayEntry.remove(),
     ),
   );
@@ -43,6 +45,7 @@ class AnimatedToast extends StatefulWidget {
   final Color? iconColor;
   final ToastState? state;
   final double? fontSize;
+  final Duration? duration;
   final VoidCallback onDismissed;
 
   const AnimatedToast({
@@ -52,6 +55,7 @@ class AnimatedToast extends StatefulWidget {
     this.icon,
     this.iconColor,
     this.fontSize,
+    this.duration,
     this.state = ToastState.success,
   });
 
@@ -63,7 +67,9 @@ class _AnimatedToastState extends State<AnimatedToast> with SingleTickerProvider
   late AnimationController _controller;
   late Animation<double> _slideAnimation;
   late Animation<double> _opacityAnimation;
+
   double _dragOffset = 0.0;
+  
   Timer? _dismissTimer;
 
   @override
@@ -90,13 +96,17 @@ class _AnimatedToastState extends State<AnimatedToast> with SingleTickerProvider
   }
 
   void _startTimer() {
-    _dismissTimer = Timer(const Duration(seconds: 3), _reverseAndDismiss);
+    _dismissTimer = Timer(
+      widget.duration ?? const Duration(seconds: 3), 
+      _reverseAndDismiss,
+    );
   }
 
   void _reverseAndDismiss() async {
     if (mounted) {
       _dismissTimer?.cancel();
-      await _controller.animateTo(0, 
+      await _controller.animateTo(
+        0, 
         curve: Curves.easeInOutCubic, 
         duration: const Duration(milliseconds: 450)
       );
@@ -153,6 +163,7 @@ class _AnimatedToastState extends State<AnimatedToast> with SingleTickerProvider
             color: Colors.transparent,
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+              constraints: BoxConstraints(maxWidth: 330, maxHeight: 250),
               decoration: BoxDecoration(
                 color: const Color(0xFF2C2C2E).withValues(alpha: 0.96),
                 borderRadius: BorderRadius.circular(16),
@@ -166,6 +177,7 @@ class _AnimatedToastState extends State<AnimatedToast> with SingleTickerProvider
               ),
               child: Row(
                 spacing: 12,
+                mainAxisSize: MainAxisSize.min,
                 children: [
                   Icon(
                     widget.icon ??
@@ -177,10 +189,13 @@ class _AnimatedToastState extends State<AnimatedToast> with SingleTickerProvider
                     color: widget.iconColor ??
                       (widget.state == ToastState.error 
                         ? Colors.red.shade300 
-                        : widget.state == ToastState.info ? Colors.amber.shade300 : Colors.green.shade300), 
+                        : widget.state == ToastState.info 
+                          ? Colors.amber.shade300 
+                          : Colors.green.shade300), 
                     size: 22,
                   ),
-                  Expanded(
+                  Flexible(
+                    fit: FlexFit.loose,
                     child: Text(
                       widget.message,
                       style: TextStyle(
