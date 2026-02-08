@@ -52,7 +52,7 @@ class _AnimatedToastState extends State<AnimatedToast> with SingleTickerProvider
     // Fade de saída muito mais lento e natural
     _opacityAnimation = CurvedAnimation(
       parent: _controller,
-      curve: const Interval(0, 1, curve: Curves.linear),
+      curve: const Interval(0, .5, curve: Curves.linear),
     );
 
     _controller.forward();
