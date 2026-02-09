@@ -5,6 +5,8 @@ import 'package:flashly/src/utils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+import 'rich_txt.dart';
+
 enum ToastState { error, info, success }
 
 void showToast(
@@ -41,21 +43,25 @@ void showToast(
 
 class AnimatedToast extends StatefulWidget {
   final String message;
+  final String? richMessage;
   final IconData? icon;
   final Color? iconColor;
   final ToastState? state;
   final double? fontSize;
   final Duration? duration;
+  final FontStyle? richMessageFontStyle;
   final VoidCallback onDismissed;
 
   const AnimatedToast({
     super.key, 
     required this.message, 
+    this.richMessage,
     required this.onDismissed,
     this.icon,
     this.iconColor,
     this.fontSize,
     this.duration,
+    this.richMessageFontStyle,
     this.state = ToastState.success,
   });
 
@@ -200,16 +206,29 @@ class _AnimatedToastState extends State<AnimatedToast> with SingleTickerProvider
                   ),
                   Flexible(
                     fit: FlexFit.loose,
-                    child: Text(
-                      widget.message,
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: widget.fontSize ?? 15,
-                        fontWeight: FontWeight.w500,
-                        decoration: TextDecoration.none,
-                        letterSpacing: -0.4,
-                      ),
-                    ),
+                    child: widget.richMessage != null
+                      ? RichTxt(
+                          text1: widget.message, 
+                          text2: widget.richMessage!,
+                          color: Colors.white,
+                          textOverflow1: .ellipsis,
+                          textOverflow2: .ellipsis,
+                          fontStyle2: widget.richMessageFontStyle,
+                          fontSize: widget.fontSize ?? 15,
+                          fontWeight: .w500,
+                          decoration: .none,
+                          letterSpacing: -0.4,
+                        )
+                      : Text(
+                          widget.message,
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: widget.fontSize ?? 15,
+                            fontWeight: FontWeight.w500,
+                            decoration: TextDecoration.none,
+                            letterSpacing: -0.4,
+                          ),
+                        ),
                   ),
                 ],
               ),

@@ -28,6 +28,9 @@ class RichTxt extends StatelessWidget {
     this.textOverflow2,
     this.fontStyle1, 
     this.fontStyle2,
+    this.letterSpacing,
+    this.letterSpacing1,
+    this.letterSpacing2,
   });
 
     final FontWeight? fontWeight;
@@ -46,7 +49,10 @@ class RichTxt extends StatelessWidget {
     final Color? color2;
     final double? fontSize;
     final double? fontSize1;
+    final double? letterSpacing;
+    final double? letterSpacing1;
     final double? fontSize2;
+    final double? letterSpacing2;
     final TextAlign? textAlign;
     final VoidCallback? onTap1;
     final VoidCallback? onTap2;
@@ -73,6 +79,7 @@ class RichTxt extends StatelessWidget {
               decoration: decoration ?? decoration1,
               decorationColor: color ?? color1 ?? Theme.of(context).colorScheme.onSurface,
               fontStyle: fontStyle1,
+              letterSpacing: letterSpacing1 ?? letterSpacing,
             ),
           ),
           TextSpan(
@@ -87,6 +94,7 @@ class RichTxt extends StatelessWidget {
               decoration: decoration ?? decoration2,
               decorationColor: color ?? color2 ?? Theme.of(context).colorScheme.onSurface,
               fontStyle: fontStyle2,
+              letterSpacing: letterSpacing2 ?? letterSpacing,
             ),
           ),
         ],
