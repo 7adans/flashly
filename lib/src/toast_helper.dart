@@ -11,6 +11,8 @@ enum ToastState { error, info, success }
 
 void showToast(
   String message, {
+  String? richMessage,
+  FontStyle? richMessageFontStyle,
   IconData? icon,
   Color? iconColor,
   ToastState? state = ToastState.success,
@@ -29,6 +31,8 @@ void showToast(
   overlayEntry = OverlayEntry(
     builder: (context) => AnimatedToast(
       message: message,
+      richMessage: richMessage,
+      richMessageFontStyle: richMessageFontStyle,
       icon: icon,
       iconColor: iconColor,
       state: state,
