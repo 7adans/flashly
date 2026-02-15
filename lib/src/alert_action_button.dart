@@ -1,11 +1,9 @@
 import 'dart:io';
 
+import 'package:flashly/flashly.dart';
 import 'package:flashly/src/colors.dart';
-import 'package:flashly/src/press_effect.dart';
-import 'package:flashly/src/txt.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
 class AlertActionButton extends StatefulWidget {
   const AlertActionButton({
@@ -18,13 +16,14 @@ class AlertActionButton extends StatefulWidget {
     this.isDestructive = false,
     this.isDestrutiveCancel = false,
     this.isPositive = false,
+    this.hapticsEnabled = true,
   });
 
   final VoidCallback? onPressed;
   final FontWeight? fontWeight;
   final String text;
   final double? fontSize;
-  final bool isDestructive, isPositive, isDestrutiveCancel;
+  final bool isDestructive, isPositive, isDestrutiveCancel, hapticsEnabled;
   final double? radius;
 
   @override
@@ -53,7 +52,7 @@ class _AlertActionButtonState extends State<AlertActionButton> {
     } 
 
     return PressEffect(
-      onPressed: widget.onPressed?.hapticCallback,
+      onPressed: () => widget.onPressed?.hapticCallback(widget.hapticsEnabled),
       child: Container(
         height: 48,
         decoration: BoxDecoration(
@@ -100,7 +99,7 @@ class _AlertActionButtonState extends State<AlertActionButton> {
           padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
           borderRadius: _borderRadius,
           color: Colors.transparent,
-          onPressed: widget.onPressed?.hapticCallback,
+          onPressed: () => widget.onPressed?.hapticCallback(widget.hapticsEnabled),
           child: child, 
         ),
       );
@@ -109,7 +108,7 @@ class _AlertActionButtonState extends State<AlertActionButton> {
     return _buildButtonDecoration(
       context,
       child: ElevatedButton(
-        onPressed: widget.onPressed?.hapticCallback,
+        onPressed: () => widget.onPressed?.hapticCallback(widget.hapticsEnabled),
         style: ElevatedButton.styleFrom(
           elevation: 0,
           shadowColor: Colors.transparent,
@@ -126,8 +125,8 @@ class _AlertActionButtonState extends State<AlertActionButton> {
 }
 
 extension HapticCallback on VoidCallback {
-  void hapticCallback() {
-    HapticFeedback.mediumImpact();
+  void hapticCallback(bool enabled) {
+    haptics(enabled: enabled);
     this.call();
   }
 }

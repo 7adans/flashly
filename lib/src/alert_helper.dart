@@ -63,6 +63,7 @@ Future<T?> showAlert<T>(
     richTitleColor: richTitleColor,
     richDescriptionColor: richDescriptionColor,
     richDescriptionFontStyle: richDescriptionFontStyle,
+    hapticsEnabled: enableHaptics,
   );
 }
 
@@ -88,6 +89,7 @@ Future<T?> _showDialog<T>(
   Color? infoIconColor,
   double? radius,
   double? actionButtonRadius,
+  bool hapticsEnabled = true,
 }) async {
   bool showButton = false;
   bool timerStarted = false;
@@ -99,6 +101,7 @@ Future<T?> _showDialog<T>(
       isDestrutiveCancel: positiveTitle != null && isDestructive,
       isPositive: positiveTitle == null,
       radius: actionButtonRadius,
+      hapticsEnabled: hapticsEnabled,
       onPressed: () {
         Navigator.pop(context ?? Flashly.context);
         if (onNegative != null) onNegative();
@@ -235,6 +238,7 @@ Future<T?> _showDialog<T>(
                         isPositive: !isDestructive,
                         isDestructive: isDestructive,
                         radius: actionButtonRadius,
+                        hapticsEnabled: hapticsEnabled,
                         onPressed: () {
                           Navigator.pop(context ??Flashly.context);
                           if (onPositive != null) onPositive();
