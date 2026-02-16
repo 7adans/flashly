@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flashly/src/hapticsound_helper.dart';
 import 'package:flashly/src/utils.dart';
@@ -131,6 +132,75 @@ class _AnimatedToastState extends State<AnimatedToast> with SingleTickerProvider
     super.dispose();
   }
 
+  Widget _buildContent() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+      constraints: BoxConstraints(
+        minWidth: 100,
+        maxWidth: 330,
+        maxHeight: 250,
+      ),
+      decoration: BoxDecoration(
+        color: const Color(0xFF2C2C2E).withValues(alpha: 0.96),
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.3),
+            blurRadius: 20,
+            offset: const Offset(0, 10),
+          ),
+        ],
+      ),
+      child: Row(
+        spacing: 12,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            widget.icon ??
+            (widget.state == ToastState.error 
+              ? CupertinoIcons.exclamationmark_circle
+              : widget.state == ToastState.info 
+                  ? CupertinoIcons.info_circle
+                  : CupertinoIcons.check_mark_circled), 
+            color: widget.iconColor ??
+              (widget.state == ToastState.error 
+                ? Colors.red.shade300 
+                : widget.state == ToastState.info 
+                  ? Colors.amber.shade300 
+                  : Colors.green.shade300), 
+            size: 22,
+          ),
+          Flexible(
+            fit: FlexFit.loose,
+            child: widget.richMessage != null
+              ? RichTxt(
+                  text1: widget.message, 
+                  text2: widget.richMessage!,
+                  color: Colors.white,
+                  textOverflow1: .ellipsis,
+                  textOverflow2: .ellipsis,
+                  fontStyle2: widget.richMessageFontStyle,
+                  fontSize: widget.fontSize ?? 15,
+                  fontWeight: .w500,
+                  decoration: .none,
+                  letterSpacing: -0.4,
+                )
+              : Text(
+                  widget.message,
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: widget.fontSize ?? 15,
+                    fontWeight: FontWeight.w500,
+                    decoration: TextDecoration.none,
+                    letterSpacing: -0.4,
+                  ),
+                ),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final bottomPadding = MediaQuery.of(context).padding.bottom + kBottomNavigationBarHeight + 10;
@@ -168,75 +238,16 @@ class _AnimatedToastState extends State<AnimatedToast> with SingleTickerProvider
               _startTimer();
             }
           },
-          // iOS feel Container design 17/18
           child: Material(
             color: Colors.transparent,
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-              constraints: BoxConstraints(
-                minWidth: 100,
-                maxWidth: 330,
-                maxHeight: 250,
-              ),
-              decoration: BoxDecoration(
-                color: const Color(0xFF2C2C2E).withValues(alpha: 0.96),
-                borderRadius: BorderRadius.circular(16),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.3),
-                    blurRadius: 20,
-                    offset: const Offset(0, 10),
+            child: Platform.isIOS
+              ? ClipRRect(
+                child: BackdropFilter(
+                    filter: .blur(sigmaX: 12, sigmaY: 12),
+                    child: _buildContent(),  
                   ),
-                ],
-              ),
-              child: Row(
-                spacing: 12,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(
-                    widget.icon ??
-                    (widget.state == ToastState.error 
-                      ? CupertinoIcons.exclamationmark_circle
-                      : widget.state == ToastState.info 
-                          ? CupertinoIcons.info_circle
-                          : CupertinoIcons.check_mark_circled), 
-                    color: widget.iconColor ??
-                      (widget.state == ToastState.error 
-                        ? Colors.red.shade300 
-                        : widget.state == ToastState.info 
-                          ? Colors.amber.shade300 
-                          : Colors.green.shade300), 
-                    size: 22,
-                  ),
-                  Flexible(
-                    fit: FlexFit.loose,
-                    child: widget.richMessage != null
-                      ? RichTxt(
-                          text1: widget.message, 
-                          text2: widget.richMessage!,
-                          color: Colors.white,
-                          textOverflow1: .ellipsis,
-                          textOverflow2: .ellipsis,
-                          fontStyle2: widget.richMessageFontStyle,
-                          fontSize: widget.fontSize ?? 15,
-                          fontWeight: .w500,
-                          decoration: .none,
-                          letterSpacing: -0.4,
-                        )
-                      : Text(
-                          widget.message,
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: widget.fontSize ?? 15,
-                            fontWeight: FontWeight.w500,
-                            decoration: TextDecoration.none,
-                            letterSpacing: -0.4,
-                          ),
-                        ),
-                  ),
-                ],
-              ),
-            ),
+              )
+              : _buildContent(),
           ),
         ),
       ),
