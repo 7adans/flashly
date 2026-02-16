@@ -141,7 +141,7 @@ class _AnimatedToastState extends State<AnimatedToast> with SingleTickerProvider
         maxHeight: 250,
       ),
       decoration: BoxDecoration(
-        color: const Color(0xFF2C2C2E).withValues(alpha: Platform.isIOS ? .7 : 0.96),
+        color: const Color(0xFF2C2C2E).withValues(alpha: Platform.isIOS ? .8 : 0.96),
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
@@ -243,7 +243,7 @@ class _AnimatedToastState extends State<AnimatedToast> with SingleTickerProvider
             child: Platform.isIOS
               ? ClipRRect(
                 child: BackdropFilter(
-                    filter: .blur(sigmaX: 12, sigmaY: 12),
+                    filter: .blur(sigmaX: 8, sigmaY: 8),
                     child: _buildContent(),  
                   ),
               )
