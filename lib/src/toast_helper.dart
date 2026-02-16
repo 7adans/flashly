@@ -242,6 +242,7 @@ class _AnimatedToastState extends State<AnimatedToast> with SingleTickerProvider
             color: Colors.transparent,
             child: Platform.isIOS
               ? ClipRRect(
+                borderRadius: BorderRadius.circular(16),
                 child: BackdropFilter(
                     filter: .blur(sigmaX: 8, sigmaY: 8),
                     child: _buildContent(),  
