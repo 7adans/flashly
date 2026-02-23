@@ -7,12 +7,25 @@ class Flashly {
   static BuildContext get context => navigatorKey.currentState!.context;
 }
 
-final _player = AudioPlayer();
-
 Future<void> playAudio(String path) async {
-  await _player.setReleaseMode(ReleaseMode.stop);
-  await _player.play(AssetSource(path));
-  await _player.dispose();
+  final player = AudioPlayer();
+
+  await player.setReleaseMode(ReleaseMode.stop);
+
+  await player.setAudioContext(
+    AudioContext(
+      iOS: AudioContextIOS(
+        category: AVAudioSessionCategory.ambient,
+        options: { AVAudioSessionOptions.mixWithOthers },
+      ),
+    ),
+  );
+
+  await player.play(AssetSource(path));
+
+  player.onPlayerComplete.listen((event) {
+    player.dispose();
+  });
 }
 
 Future<void> playAlert({
