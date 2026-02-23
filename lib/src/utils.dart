@@ -10,16 +10,15 @@ class Flashly {
 Future<void> playAudio(String path) async {
   final player = AudioPlayer();
 
-  await player.setReleaseMode(ReleaseMode.stop);
-
   await player.setAudioContext(
     AudioContext(
       iOS: AudioContextIOS(
         category: AVAudioSessionCategory.ambient,
-        options: { AVAudioSessionOptions.mixWithOthers },
       ),
     ),
   );
+
+  await player.setReleaseMode(ReleaseMode.stop);
 
   await player.play(AssetSource(path));
 
