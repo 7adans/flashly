@@ -99,7 +99,7 @@ class _AnimatedToastState extends State<AnimatedToast> with SingleTickerProvider
 
     _opacityAnimation = CurvedAnimation(
       parent: _controller,
-      curve: const Interval(0, .4, curve: Curves.linear),
+      curve: const Interval(0, .1, curve: Curves.linear),
     );
 
     _controller.forward();
