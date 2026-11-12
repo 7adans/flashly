@@ -1,3 +1,3 @@
 ## 0.0.1
 
-* TODO: Describe initial release.
+* Initial release: animated toasts, Lottie-animated alerts, loader dialogs, adaptive spinner, haptics and `PressEffect`.
